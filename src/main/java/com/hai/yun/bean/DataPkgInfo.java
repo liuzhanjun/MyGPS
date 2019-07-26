@@ -64,7 +64,7 @@ public class DataPkgInfo {
         dIndex = addInfo(dealBytes, dIndex, mInfolist);
         //校验位
         byte[] crc = CRC16.getCRC16(dealBytes);
-        System.out.println("CRC=" + BinaryUtils.intToHex(BinaryUtils.getInt(crc)));
+        System.out.println("CRC=" + BinaryUtils.intTo0x(BinaryUtils.getInt(crc), 2));
 
         index = addInfo(content, index, crc);
         //停止位

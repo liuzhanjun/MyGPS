@@ -126,6 +126,25 @@ public class BinaryUtils {
         return count;
     }
 
+    /**
+     * 合并x,y
+     *
+     * @param x
+     * @param y
+     * @return
+     */
+    public static byte[] mergeBbytes(byte[] x, byte[] y) {
+        byte[] bytes = new byte[x.length + y.length];
+        int index = 0;
+        for (int i = 0; i < x.length; i++) {
+            bytes[index++] = x[i];
+        }
+        for (int i = 0; i < y.length; i++) {
+            bytes[index++] = y[i];
+        }
+        return bytes;
+    }
+
 
     /**
      * 获得一个字节的整数
@@ -138,25 +157,64 @@ public class BinaryUtils {
     }
 
 
+//    /**
+//     * 10进制转16进制
+//     *
+//     * @param n
+//     * @return
+//     */
+//    public static String intToHex(int n) {
+//        //StringBuffer s = new StringBuffer();
+//        StringBuilder sb = new StringBuilder(8);
+//        String a;
+//        char[] b = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+//        while (n != 0) {
+//            sb = sb.append(b[(n & 0xff) % 16]);
+//            n = n / 16;
+//        }
+//        a = sb.reverse().toString();
+//        return a;
+//    }
+
+
     /**
-     * 10进制转16进制
-     *
-     * @param n
+     * @param n 必须是一个字节的 或者根据getInt转过的int
      * @return
      */
-    public static String intToHex(int n) {
-        //StringBuffer s = new StringBuffer();
+    public static String byteToOx(int n) {
         StringBuilder sb = new StringBuilder(8);
-        String a;
         char[] b = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
-        while (n != 0) {
-            sb = sb.append(b[(n & 0xff) % 16]);
-            n = n / 16;
-        }
-        a = sb.reverse().toString();
-        return a;
+        sb.append(b[(n & 0xff) % 16]);
+        n = (byte) (n / 16);
+        sb.append(b[(n & 0xff) % 16]);
+        return sb.reverse().toString();
+
     }
 
+    /**
+     * 将10进制数转为对应的16进制字符串
+     *
+     * @param n   十进制数
+     * @param len 10进制数表示的位宽  比如这个十进制表示2位 则这个n的只最大只能位65535
+     *            len的长度不能超过4位
+     * @return
+     */
+    public static String intTo0x(int n, int len) {
+        if (len > 4) {
+            len = 4;
+        }
+        double max = Math.pow(2, (len * 8)) - 1;
+        if (n > max) {
+            throw new IndexOutOfBoundsException("超出表示长度");
+        }
+
+        StringBuffer buffer = new StringBuffer();
+        for (int i = len - 1; i >= 0; i--) {
+            buffer.append((byteToOx(((n >> (i * 8)) & 0xff))) + "|");
+        }
+        return buffer.toString();
+    }
+    
     public static byte[] getIMEI(String IMEI) {
         return getoxBinary(IMEI);
     }

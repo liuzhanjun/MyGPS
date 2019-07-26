@@ -27,12 +27,8 @@ public class DataPkgInfoTest {
                 .setMInfolist(1)
                 .build();
         byte[] bs = datap.getDataPkg();
-
-
         for (byte b : bs) {
-            String str = BinaryUtils.intToHex(BinaryUtils.getInt(b));
-            System.out.print(str + "|");
-
+            System.out.print(BinaryUtils.byteToOx(BinaryUtils.getInt(b)) + "|");
         }
 
 

@@ -1,7 +1,8 @@
 package com.hai.yun.bean.utils;
 
 import com.hai.yun.bean.EarthPoint;
-import com.hai.yun.bean.GPSInfo;
+import com.hai.yun.bean.GpsInfo;
+import com.hai.yun.bean.GpsStateDir;
 import org.joda.time.DateTime;
 
 public class GPSUtils {
@@ -13,12 +14,12 @@ public class GPSUtils {
      * @param satelliteNumber 卫星数
      * @param point           经纬度
      * @param speed           速度
-     * @param gpsInfo         gps状态信息
+     * @param gpsStateDir     gps状态信息
      * @param ext_content     预留位信息
      * @param ext_len         预留位长度
      * @return
      */
-    public static byte[] setGPSContent(DateTime time, int len, int satelliteNumber, EarthPoint point, int speed, GPSInfo gpsInfo, int ext_content, int ext_len) {
+    private static byte[] setGPSContent(DateTime time, int len, int satelliteNumber, EarthPoint point, int speed, GpsStateDir gpsStateDir, int ext_content, int ext_len) {
         //设置时间
         byte[] time_bytes = setTime(time);
         //设置信息长度和卫星数目
@@ -28,7 +29,7 @@ public class GPSUtils {
         //设置速度
         byte speed_byte = setSpeed(speed);
         //设置状态和方向
-        byte[] stateAndDire = setStateAndDire(gpsInfo.getRun_dir_c(), gpsInfo.getLatitude_dir(), gpsInfo.getLongitude_dir(), gpsInfo.getGps_state(), gpsInfo.getGps_time());
+        byte[] stateAndDire = setStateAndDire(gpsStateDir.getRun_dir_c(), gpsStateDir.getLatitude_dir(), gpsStateDir.getLongitude_dir(), gpsStateDir.getGps_state(), gpsStateDir.getGps_time());
         int byte_len = time_bytes.length + 1 + earth_point_bytes.length + 1 + stateAndDire.length;
         //预留位 以后使用
         byte[] extBit = null;
@@ -71,10 +72,22 @@ public class GPSUtils {
      * @param satelliteNumber 卫星数
      * @param point           经纬度
      * @param speed           速度
-     * @param gpsInfo         gps状态信息
+     * @param gpsStateDir     gps状态信息
      */
-    public static byte[] setGPSContent(DateTime time, int len, int satelliteNumber, EarthPoint point, int speed, GPSInfo gpsInfo) {
-        return setGPSContent(time, len, satelliteNumber, point, speed, gpsInfo, 0, 0);
+    private static byte[] setGPSContent(DateTime time, int len, int satelliteNumber, EarthPoint point, int speed, GpsStateDir gpsStateDir) {
+        return setGPSContent(time, len, satelliteNumber, point, speed, gpsStateDir, 0, 0);
+    }
+
+    /**
+     * 设置gps信息
+     *
+     * @param info
+     * @return
+     */
+    public static byte[] setGPSContent(GpsInfo info) {
+//        time, len, satelliteNumber, point, speed, gpsStateDir
+        return setGPSContent(info.getTime(), info.getLen(), info.getSatelliteNumber(), info.getPoint(), info.getSpeed(), info.getGpsStateDir());
+
     }
 
     /**

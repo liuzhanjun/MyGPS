@@ -1,5 +1,6 @@
 package com.hai.yun.bean.utils;
 
+import com.hai.yun.bean.LbsInfo;
 import org.joda.time.DateTime;
 
 public class LBSUtils {
@@ -66,7 +67,17 @@ public class LBSUtils {
         return BinaryUtils.getBytes(content, len);
     }
 
-    public static byte[] setLBSContent(DateTime time, int mcc, int mnc, int lac, int cellId, int ext_content, int ext_len) {
+    /**
+     * @param time        时间
+     * @param mcc         移动用户所属国家代号
+     * @param mnc         移动网号码
+     * @param lac         位置区码
+     * @param cellId      移动基站
+     * @param ext_content 预留扩展位
+     * @param ext_len     扩展位长度
+     * @return
+     */
+    private static byte[] setLBSContent(DateTime time, int mcc, int mnc, int lac, int cellId, int ext_content, int ext_len) {
         int byte_len = 14;
         byte[] extBit = null;
         if (ext_content != 0 && ext_len != 0) {
@@ -98,8 +109,27 @@ public class LBSUtils {
         return result;
     }
 
-    public static byte[] setLBSContent(DateTime time, int mcc, int mnc, int lac, int cellId) {
+    /**
+     * @param time   时间
+     * @param mcc    移动用户所属国家代号
+     * @param mnc    移动网号码
+     * @param lac    位置区码
+     * @param cellId 移动基站
+     * @return
+     */
+    private static byte[] setLBSContent(DateTime time, int mcc, int mnc, int lac, int cellId) {
         return setLBSContent(time, mcc, mnc, lac, cellId, 0, 0);
+    }
+
+
+    /**
+     * LBSinfo
+     *
+     * @param info
+     * @return
+     */
+    public static byte[] setLBSContent(LbsInfo info) {
+        return setLBSContent(info.getTime(), info.getMcc(), info.getMnc(), info.getLac(), info.getCellId());
     }
 
     private static int setResult(byte[] bytes, byte[] result, int index) {

@@ -1,9 +1,9 @@
 package com.hai.yun.bean;
 
 /**
- * GPS信息
+ * GPS状态方向信息
  */
-public class GPSInfo {
+public class GpsStateDir {
 
     private int run_dir_c;// 运行方向度数 0-360°
     private int latitude_dir;// 纬度方向 0：南纬 1：北纬
@@ -11,7 +11,7 @@ public class GPSInfo {
     private int gps_state;// GPS定位状态  0：GPS不定位 1：GPS已定位
     private int gps_time;// GPS类型  0：实时GPS  1差分GPS
 
-    public GPSInfo(int run_dir_c, int latitude_dir, int longitude_dir, int gps_state, int gps_time) {
+    public GpsStateDir(int run_dir_c, int latitude_dir, int longitude_dir, int gps_state, int gps_time) {
         this.run_dir_c = run_dir_c;
         this.latitude_dir = latitude_dir;
         this.longitude_dir = longitude_dir;

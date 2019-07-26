@@ -98,6 +98,7 @@ public class BinaryUtils {
         return bytes;
     }
 
+
     /**
      * 获得一个整数的一个字节表示
      *
@@ -106,6 +107,61 @@ public class BinaryUtils {
      */
     public static byte getByte(int data) {
         return (byte) (data & 0xff);
+    }
+
+
+    /**
+     * 将字符串转换为16进制2位的unicode字符串
+     *
+     * @param string
+     * @return
+     */
+    public static String string2Unicode(String string) {
+
+        StringBuffer unicode = new StringBuffer();
+
+        for (int i = 0; i < string.length(); i++) {
+
+            // 取出每一个字符
+            char c = string.charAt(i);
+
+            // 转换为unicode
+            unicode.append(Integer.toHexString(c));
+
+        }
+
+        return unicode.toString();
+    }
+
+    /**
+     * unicode转字符串
+     *
+     * @param unicode 转单个字符
+     * @return
+     */
+    public static char unicodeTochar(String unicode) {
+
+        int index = Integer.parseInt(unicode, 16);
+
+        return (char) index;
+    }
+
+    /**
+     * unicode转字符串
+     *
+     * @param unicode
+     * @return
+     */
+    public static String unicodeToString(String unicode) {
+        int len = unicode.length();
+        int len2 = (len / 2) + len % 2;
+        StringBuffer buffer = new StringBuffer();
+        for (int i = len2 - 1; i >= 0; i--) {
+            String substring = unicode.substring(len - 2 <= 0 ? 0 : len - 2, len);
+            buffer.append(unicodeTochar(substring));
+            len -= 2;
+        }
+        return buffer.reverse().toString();
     }
 
     /**
@@ -145,6 +201,29 @@ public class BinaryUtils {
         return bytes;
     }
 
+
+    /**
+     * 合并x,y
+     *
+     * @param x
+     * @param y
+     * @param z
+     * @return
+     */
+    public static byte[] mergeBbytes(byte[] x, byte[] y, byte[] z) {
+        byte[] bytes = new byte[x.length + y.length];
+        int index = 0;
+        for (int i = 0; i < x.length; i++) {
+            bytes[index++] = x[i];
+        }
+        for (int i = 0; i < y.length; i++) {
+            bytes[index++] = y[i];
+        }
+        for (int i = 0; i < z.length; i++) {
+            bytes[index++] = z[i];
+        }
+        return bytes;
+    }
 
     /**
      * 获得一个字节的整数
@@ -214,7 +293,7 @@ public class BinaryUtils {
         }
         return buffer.toString();
     }
-    
+
     public static byte[] getIMEI(String IMEI) {
         return getoxBinary(IMEI);
     }
@@ -229,7 +308,6 @@ public class BinaryUtils {
         int len = ox.length();
         int[] IMEIS = new int[(len / 2) + len % 2];
         int len2 = IMEIS.length;
-        System.out.println(IMEIS.length);
         //将IMEIS中的元素看作16进制转位10进制
         for (int i = len2 - 1; i >= 0; i--) {
             IMEIS[i] = Integer.parseInt(ox.substring(len - 2 <= 0 ? 0 : len - 2, len), 16);

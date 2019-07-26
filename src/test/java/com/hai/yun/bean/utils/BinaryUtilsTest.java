@@ -33,11 +33,15 @@ public class BinaryUtilsTest {
 
     @Test
     public void getIMEI() {
-        byte[] s = BinaryUtils.getIMEI("123456789012345");
-        for (byte b : s) {
-            System.out.print(b + "|");
 
-        }
+
+        String phone = "13800138000";
+        String str = BinaryUtils.string2Unicode(phone);
+        System.out.println(str);
+        System.out.println("==="+BinaryUtils.unicodeToString(str));
+
+        System.out.println(BinaryUtils.getoxBinary(str).length);
+
 
     }
 }

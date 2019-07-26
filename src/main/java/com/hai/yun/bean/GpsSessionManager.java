@@ -1,10 +1,6 @@
 package com.hai.yun.bean;
 
-import com.hai.yun.bean.utils.BinaryUtils;
-import com.hai.yun.bean.utils.GPSUtils;
-import com.hai.yun.bean.utils.HeartBeatUtils;
-import com.hai.yun.bean.utils.LBSUtils;
-import org.joda.time.DateTime;
+import com.hai.yun.bean.utils.*;
 
 /**
  * GPS会话信息 单例模式
@@ -69,20 +65,84 @@ public enum GpsSessionManager {
     public byte[] getGPSAndLBSpkg(int listNO, GpsInfo gpsInfo, LbsInfo lbsInfo) {
         byte[] gps_bytes = GPSUtils.setGPSContent(gpsInfo);
         byte[] lbs_bytes = LBSUtils.setLBSContent(lbsInfo);
-        byte[] content = BinaryUtils.mergeBbytes(gps_bytes, lbs_bytes);
+        byte[] lbs_re_bytes = new byte[lbs_bytes.length - 6];
+        //lbs要去掉日期 也就是前六位
+        int index = 0;
+        for (int i = 6; i < lbs_bytes.length; i++) {
+            lbs_re_bytes[index++] = lbs_bytes[i];
+        }
+        byte[] content = BinaryUtils.mergeBbytes(gps_bytes, lbs_re_bytes);
         return dealBuilder(AgreeMentNos.GPSAndLBSInfo, content, listNO);
     }
 
     /**
-     * 获得心跳包
+     * 终端信息  （心跳包）
      *
-     * @param info 心跳包信息
+     * @param info 终端信息
      * @return
      */
     public byte[] getBeartHeatPkg(HeartBeatInfo info) {
         byte[] content = HeartBeatUtils.setHearteatContent(info);
         return dealBuilder(AgreeMentNos.GPSAndLBSInfo, content, info.getListNO());
     }
+
+    /**
+     * 卫星信噪比
+     *
+     * @param listNo     信息序列号
+     * @param num        卫星数目
+     * @param xzb        信噪比
+     * @param extContent 预留扩展位
+     * @return
+     */
+    public byte[] getSateliteSnor(int listNo, int num, byte[] xzb, byte[] extContent) {
+        return dealBuilder(AgreeMentNos.SSNIRInfo, SatelliteSnorUtils.setSateliteSnor(num, xzb, extContent), listNo);
+    }
+
+
+    /**
+     * 报警信息
+     *
+     * @param listNO  信息序列号
+     * @param gpsInfo gps信息
+     * @param lbsInfo lbs信息
+     * @param info    终端信息
+     * @return
+     */
+    public byte[] getWarring(int listNO, GpsInfo gpsInfo, LbsInfo lbsInfo, HeartBeatInfo info) {
+        //GPS
+        byte[] gps_bytes = GPSUtils.setGPSContent(gpsInfo);
+        //LBS
+        byte[] lbs_bytes = LBSUtils.setLBSContent(lbsInfo);
+        //终端信息
+        byte[] heart_content = HeartBeatUtils.setHearteatContent(info);
+
+        byte[] lbs_re_bytes = new byte[lbs_bytes.length - 5];
+        //lbs要去掉日期 也就是前六位 并在前面加1位 ：表示lbs长度
+        int index = 0;
+        lbs_re_bytes[index++] = BinaryUtils.getByte(lbs_re_bytes.length);
+        for (int i = 6; i < lbs_bytes.length; i++) {
+            lbs_re_bytes[index++] = lbs_bytes[i];
+        }
+
+        byte[] content = BinaryUtils.mergeBbytes(gps_bytes, lbs_re_bytes, heart_content);
+        return dealBuilder(AgreeMentNos.WarningInfo, content, listNO);
+    }
+
+
+    /**
+     * 多基站定位信息
+     *
+     * @param info
+     * @return
+     */
+    public byte[] getLBSMultiStation(LbsMultiStationInfo info) {
+        byte[] content = LBSUtils.setLBSMultiStationContent(info);
+        return dealBuilder(AgreeMentNos.LBSMultipleBaseStations, content, info.getmListNo());
+    }
+
+
+
 
 
     private byte[] dealBuilder(byte agreeMentNO, byte[] content, int listNo) {

@@ -16,10 +16,9 @@ public class GPSUtils {
      * @param speed           速度
      * @param gpsStateDir     gps状态信息
      * @param ext_content     预留位信息
-     * @param ext_len         预留位长度
      * @return
      */
-    private static byte[] setGPSContent(DateTime time, int len, int satelliteNumber, EarthPoint point, int speed, GpsStateDir gpsStateDir, int ext_content, int ext_len) {
+    private static byte[] setGPSContent(DateTime time, int len, int satelliteNumber, EarthPoint point, int speed, GpsStateDir gpsStateDir, byte[] ext_content) {
         //设置时间
         byte[] time_bytes = setTime(time);
         //设置信息长度和卫星数目
@@ -31,11 +30,9 @@ public class GPSUtils {
         //设置状态和方向
         byte[] stateAndDire = setStateAndDire(gpsStateDir.getRun_dir_c(), gpsStateDir.getLatitude_dir(), gpsStateDir.getLongitude_dir(), gpsStateDir.getGps_state(), gpsStateDir.getGps_time());
         int byte_len = time_bytes.length + 1 + earth_point_bytes.length + 1 + stateAndDire.length;
-        //预留位 以后使用
-        byte[] extBit = null;
-        if (ext_content != 0 && ext_len != 0) {
-            extBit = extBit(ext_content, ext_len);
-            byte_len += ext_len;
+        //预留位
+        if (ext_content != null) {
+            byte_len += ext_content.length;
         }
 
         byte[] result = new byte[byte_len];
@@ -51,8 +48,52 @@ public class GPSUtils {
         //设置状态和方向
         index = setResult(stateAndDire, result, index);
         //设置扩展
-        if (ext_content != 0 && ext_len != 0) {
-            setResult(extBit, result, index);
+        if (ext_content != null) {
+            setResult(ext_content, result, index);
+        }
+        return result;
+
+    }
+
+
+    private static byte[] setGPSContent(DateTime time, int len, int satelliteNumber, EarthPoint point, int speed, GpsStateDir gpsStateDir, byte[] ext_content, String phone) {
+        //设置时间
+        byte[] time_bytes = setTime(time);
+        //设置信息长度和卫星数目
+        byte slengthNumber = setGPSlengthNumber(len, satelliteNumber);
+        //设置经纬度
+        byte[] earth_point_bytes = setLatitudeAndLongitude(point);
+        //设置速度
+        byte speed_byte = setSpeed(speed);
+        //设置状态和方向
+        byte[] stateAndDire = setStateAndDire(gpsStateDir.getRun_dir_c(), gpsStateDir.getLatitude_dir(), gpsStateDir.getLongitude_dir(), gpsStateDir.getGps_state(), gpsStateDir.getGps_time());
+        if (phone!=null){
+
+        }
+        int byte_len = time_bytes.length + 1 + earth_point_bytes.length + 1 + stateAndDire.length;
+        //预留位
+        if (ext_content != null) {
+            byte_len += ext_content.length;
+        }
+
+        byte[] result = new byte[byte_len];
+        int index = 0;
+        //设置时间
+        index = setResult(time_bytes, result, index);
+        //设置卫星数和长度信息
+        result[index++] = slengthNumber;
+        //设置经纬度
+        index = setResult(earth_point_bytes, result, index);
+        //设置速度
+        result[index++] = speed_byte;
+        //设置状态和方向
+        index = setResult(stateAndDire, result, index);
+
+        //设置电话
+
+        //设置扩展
+        if (ext_content != null) {
+            setResult(ext_content, result, index);
         }
         return result;
 
@@ -66,17 +107,6 @@ public class GPSUtils {
         return index;
     }
 
-    /**
-     * @param time            时间
-     * @param len             信息长度
-     * @param satelliteNumber 卫星数
-     * @param point           经纬度
-     * @param speed           速度
-     * @param gpsStateDir     gps状态信息
-     */
-    private static byte[] setGPSContent(DateTime time, int len, int satelliteNumber, EarthPoint point, int speed, GpsStateDir gpsStateDir) {
-        return setGPSContent(time, len, satelliteNumber, point, speed, gpsStateDir, 0, 0);
-    }
 
     /**
      * 设置gps信息
@@ -86,9 +116,15 @@ public class GPSUtils {
      */
     public static byte[] setGPSContent(GpsInfo info) {
 //        time, len, satelliteNumber, point, speed, gpsStateDir
-        return setGPSContent(info.getTime(), info.getLen(), info.getSatelliteNumber(), info.getPoint(), info.getSpeed(), info.getGpsStateDir());
+        return setGPSContent(info.getTime(), info.getLen(), info.getSatelliteNumber(), info.getPoint(), info.getSpeed(), info.getGpsStateDir(), info.getExt_content());
 
     }
+
+
+    public static byte[] setGSPqueryAddress() {
+    return null;
+    }
+
 
     /**
      * 设置GPS信息长度和卫星数目

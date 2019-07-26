@@ -20,8 +20,8 @@ public class GpsInfo {
     private EarthPoint point;//经纬度
     private int speed;//速度
     private GpsStateDir gpsStateDir;//gps状态信息
-    private int ext_content;//预留扩展位信息
-    private int ext_len;//预留扩展位长度
+    private byte[] ext_content = null;//预留扩展位信息
+
 
     public GpsInfo addListNo(int listNo) {
         this.listNo = listNo;
@@ -58,15 +58,11 @@ public class GpsInfo {
         return this;
     }
 
-    public GpsInfo addExt_content(int ext_content) {
+    public GpsInfo addExt_content(byte[] ext_content) {
         this.ext_content = ext_content;
         return this;
     }
 
-    public GpsInfo addExt_len(int ext_len) {
-        this.ext_len = ext_len;
-        return this;
-    }
 
     public int getListNo() {
         return listNo;
@@ -96,11 +92,9 @@ public class GpsInfo {
         return gpsStateDir;
     }
 
-    public int getExt_content() {
+    public byte[] getExt_content() {
         return ext_content;
     }
 
-    public int getExt_len() {
-        return ext_len;
-    }
+
 }

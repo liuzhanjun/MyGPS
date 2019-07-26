@@ -14,11 +14,20 @@ import org.joda.time.DateTime;
 public class LbsInfo {
     private int listNo;//信息序列号
     private DateTime time;//时间
-    private int mcc;//移动用户所属国家代号
+    private int mcc;//移动用户所属国家代号 
     private int mnc;//移动网号码
     private int lac;//位置区码
     private int cellId;//移动基站
+    private byte[] extContent;//预留扩展位
 
+    public byte[] getExtContent() {
+        return extContent;
+    }
+
+    public LbsInfo addExtContent(byte[] extContent) {
+        this.extContent = extContent;
+        return this;
+    }
 
     public LbsInfo addListNo(int listNo) {
         this.listNo = listNo;

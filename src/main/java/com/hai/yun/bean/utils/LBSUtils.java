@@ -1,6 +1,7 @@
 package com.hai.yun.bean.utils;
 
 import com.hai.yun.bean.LbsInfo;
+import com.hai.yun.bean.LbsMultiStationInfo;
 import org.joda.time.DateTime;
 
 public class LBSUtils {
@@ -56,6 +57,14 @@ public class LBSUtils {
         return BinaryUtils.getBytes(cellId, 3);
     }
 
+    private static byte[] setMci(int mci) {
+        return BinaryUtils.getBytes(mci, 2);
+    }
+
+    private static byte setMciss(int mciss) {
+        return BinaryUtils.getByte(mciss);
+    }
+
     /**
      * 预留扩展位
      *
@@ -74,15 +83,13 @@ public class LBSUtils {
      * @param lac         位置区码
      * @param cellId      移动基站
      * @param ext_content 预留扩展位
-     * @param ext_len     扩展位长度
      * @return
      */
-    private static byte[] setLBSContent(DateTime time, int mcc, int mnc, int lac, int cellId, int ext_content, int ext_len) {
+    private static byte[] setLBSContent(DateTime time, int mcc, int mnc, int lac, int cellId, byte[] ext_content) {
         int byte_len = 14;
-        byte[] extBit = null;
-        if (ext_content != 0 && ext_len != 0) {
-            extBit = extBit(ext_content, ext_len);
-            byte_len += ext_len;
+
+        if (ext_content != null) {
+            byte_len += ext_content.length;
         }
         byte[] result = new byte[byte_len];
         //设置时间
@@ -103,22 +110,10 @@ public class LBSUtils {
         index = setResult(lac_bytes, result, index);
         index = setResult(cell_id_bytes, result, index);
         //设置扩展
-        if (ext_content != 0 && ext_len != 0) {
-            setResult(extBit, result, index);
+        if (ext_content != null) {
+            setResult(ext_content, result, index);
         }
         return result;
-    }
-
-    /**
-     * @param time   时间
-     * @param mcc    移动用户所属国家代号
-     * @param mnc    移动网号码
-     * @param lac    位置区码
-     * @param cellId 移动基站
-     * @return
-     */
-    private static byte[] setLBSContent(DateTime time, int mcc, int mnc, int lac, int cellId) {
-        return setLBSContent(time, mcc, mnc, lac, cellId, 0, 0);
     }
 
 
@@ -129,7 +124,50 @@ public class LBSUtils {
      * @return
      */
     public static byte[] setLBSContent(LbsInfo info) {
-        return setLBSContent(info.getTime(), info.getMcc(), info.getMnc(), info.getLac(), info.getCellId());
+        return setLBSContent(info.getTime(), info.getMcc(), info.getMnc(), info.getLac(), info.getCellId(), info.getExtContent());
+    }
+
+
+    /**
+     * 设置lbs多基站定位信息
+     *
+     * @param info
+     * @return
+     */
+    public static byte[] setLBSMultiStationContent(LbsMultiStationInfo info) {
+
+        //设置时间
+        byte[] time_bytes = setTime(info.getmTime());
+        byte[] mcc = setMcc(info.getmMcc());
+        byte mnc = setMnc(info.getmMnc());
+        byte[] lac = setLac(info.getmLac());
+        int[][] mciMciss = info.getmMci_Mciss();
+        byte[] mci_mciss = new byte[mciMciss.length * 3];
+        int index = 0;
+        for (int i = 0; i < mciMciss.length; i++) {
+            byte[] mcis = setMci(mciMciss[i][0]);
+            mci_mciss[index++] = mcis[0];
+            mci_mciss[index++] = mcis[1];
+            byte mciss = setMciss(mciMciss[i][1]);
+            mci_mciss[index++] = mciss;
+        }
+        int len = time_bytes.length + mcc.length + 1 + lac.length + mci_mciss.length;
+        if (info.getExtContent() != null) {
+            len += info.getExtContent().length;
+        }
+        byte[] bytes = new byte[len];
+        int mIndex = 0;
+        mIndex = setResult(bytes, time_bytes, mIndex);
+        mIndex = setResult(bytes, mcc, mIndex);
+        bytes[mIndex++] = mnc;
+        mIndex = setResult(bytes, lac, mIndex);
+        mIndex = setResult(bytes, mci_mciss, mIndex);
+        if (info.getExtContent() != null) {
+            setResult(bytes, info.getExtContent(), mIndex);
+        }
+
+        return bytes;
+
     }
 
     private static int setResult(byte[] bytes, byte[] result, int index) {

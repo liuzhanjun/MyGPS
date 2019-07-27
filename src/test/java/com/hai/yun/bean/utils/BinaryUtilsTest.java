@@ -35,13 +35,17 @@ public class BinaryUtilsTest {
     public void getIMEI() {
 
 
-        String phone = "13800138000";
-        String str = BinaryUtils.string2Unicode(phone);
-        System.out.println(str);
-        System.out.println("==="+BinaryUtils.unicodeToString(str));
+//        String phone = "13800138000";
+//        String str = BinaryUtils.string2Unicode(phone);
+//        System.out.println(str);
+//        System.out.println("==="+BinaryUtils.unicodeToString(str));
+//
+//        System.out.println(BinaryUtils.getoxBinary(str).length);
 
-        System.out.println(BinaryUtils.getoxBinary(str).length);
-
+//        byte[] bytes = GPSUtils.setPhone("龙", 21);
+//        for (byte aByte : bytes) {
+//            System.out.print(BinaryUtils.byteToOx(BinaryUtils.getInt(aByte))+"|");
+//        }
 
     }
 }

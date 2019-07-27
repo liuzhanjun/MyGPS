@@ -1,6 +1,9 @@
 package com.hai.yun.bean;
 
 import com.hai.yun.bean.utils.*;
+import org.joda.time.DateTime;
+
+import java.util.Collections;
 
 /**
  * GPS会话信息 单例模式
@@ -19,6 +22,7 @@ public enum GpsSessionManager {
     private DataPkgInfo.Builder builder = new DataPkgInfo.Builder();
 
     /**
+     * 0x01
      * 登陆信息包
      *
      * @param IMEI   机器码
@@ -30,8 +34,52 @@ public enum GpsSessionManager {
         return dealBuilder(AgreeMentNos.loginNO, BinaryUtils.getIMEI(IMEI), listNo);
     }
 
+
     /**
-     * 获得GPS信息包 0x01
+     * //解析平台响应的信息包
+     * 这个方法适用于常规平台响应
+     *
+     * @param infos 返回的信息
+     * @return
+     */
+    public AnalysisPkgInfo analysisCommonPkg(byte infos[]) {
+        AnalysisPkgInfo.AnalysisBuilder analysisBuilder = new AnalysisPkgInfo.AnalysisBuilder();
+        //获得包长度
+        byte pkglen = infos[2];
+        //获得协议号
+        byte agreeMentNo = infos[3];
+        //获得信息序列号
+        byte[] infolist = new byte[]{infos[4], infos[5]};
+        //获得校验位倒数第四位和第三位
+        byte[] checkBite = new byte[]{infos[infos.length - 4], infos[infos.length - 3]};
+        //解析时间
+        DateTime d_time = null;
+        //如果长度大于5说明有时间要解析
+        int len = BinaryUtils.getInt(pkglen);
+        byte[] time = null;
+        if (len > 5) {
+            time = new byte[6];
+            int index = 0;
+            for (int i = 6; i < 12; i++) {
+                time[index++] = infos[i];
+            }
+
+        }
+
+        AnalysisPkgInfo analysisinfo = analysisBuilder
+                .addmPkgLength(pkglen)
+                .addmAgreeMentNO(agreeMentNo)
+                .addmTime(time)
+                .addmInfolist(infolist)
+                .addmCheckBit(checkBite).build();
+
+        return analysisinfo;
+
+    }
+
+
+    /**
+     * 获得GPS信息包 0x10
      *
      * @param info gps 信息包
      * @return
@@ -56,6 +104,7 @@ public enum GpsSessionManager {
 
     /**
      * 获得GPS 和LBS合并信息包
+     * 0x12
      *
      * @param listNO  信息序列号
      * @param gpsInfo gps信息
@@ -76,6 +125,7 @@ public enum GpsSessionManager {
     }
 
     /**
+     * 0x13
      * 终端信息  （心跳包）
      *
      * @param info 终端信息
@@ -83,11 +133,12 @@ public enum GpsSessionManager {
      */
     public byte[] getBeartHeatPkg(HeartBeatInfo info) {
         byte[] content = HeartBeatUtils.setHearteatContent(info);
-        return dealBuilder(AgreeMentNos.GPSAndLBSInfo, content, info.getListNO());
+        return dealBuilder(AgreeMentNos.heartbeat, content, info.getListNO());
     }
 
     /**
      * 卫星信噪比
+     * 0x14
      *
      * @param listNo     信息序列号
      * @param num        卫星数目
@@ -102,6 +153,7 @@ public enum GpsSessionManager {
 
     /**
      * 报警信息
+     * 0x16
      *
      * @param listNO  信息序列号
      * @param gpsInfo gps信息
@@ -142,10 +194,30 @@ public enum GpsSessionManager {
     }
 
 
+    /**
+     * 0x1A
+     * GPS查询地址
+     *
+     * @param gpsInfo
+     * @return
+     */
+    public byte[] gpsQueryAddress(GpsInfo gpsInfo) {
+        byte[] content = GPSUtils.setGSPqueryAddress(gpsInfo);
+        return dealBuilder(AgreeMentNos.queryAddressGPS, content, gpsInfo.getListNo());
+    }
+
+    /**
+     * 解析查询地址回复
+     *
+     * @param bytes
+     * @return
+     */
+    public byte analysisQueryAddressPkg(byte[] bytes) {
+        return 1;
+    }
 
 
-
-    private byte[] dealBuilder(byte agreeMentNO, byte[] content, int listNo) {
+    private byte[] dealBuilder(byte [] agreeMentNO, byte[] content, int listNo) {
 
         //登录信息
         DataPkgInfo datap = builder

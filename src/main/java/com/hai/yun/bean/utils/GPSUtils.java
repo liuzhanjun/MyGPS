@@ -10,7 +10,7 @@ public class GPSUtils {
 
     /**
      * @param time            时间
-     * @param len             信息长度
+     * @param len             GPS信息长度
      * @param satelliteNumber 卫星数
      * @param point           经纬度
      * @param speed           速度
@@ -26,10 +26,15 @@ public class GPSUtils {
         //设置经纬度
         byte[] earth_point_bytes = setLatitudeAndLongitude(point);
         //设置速度
-        byte speed_byte = setSpeed(speed);
+        byte[] speed_byte = setSpeed(speed);
         //设置状态和方向
         byte[] stateAndDire = setStateAndDire(gpsStateDir.getRun_dir_c(), gpsStateDir.getLatitude_dir(), gpsStateDir.getLongitude_dir(), gpsStateDir.getGps_state(), gpsStateDir.getGps_time());
-        int byte_len = time_bytes.length + 1 + earth_point_bytes.length + 1 + stateAndDire.length;
+        //内容长度
+        int byte_len = time_bytes.length//时间长度
+                + GpsInfo.len_satelliteNumber_L//GPS信息和卫星数所占长度
+                + earth_point_bytes.length//经纬度所占长度
+                + GpsInfo.speed_L//速度所占长度
+                + stateAndDire.length;//状态方向所占长度
         //预留位
         if (ext_content != null) {
             byte_len += ext_content.length;
@@ -44,7 +49,7 @@ public class GPSUtils {
         //设置经纬度
         index = setResult(earth_point_bytes, result, index);
         //设置速度
-        result[index++] = speed_byte;
+        index = setResult(speed_byte, result, index);
         //设置状态和方向
         index = setResult(stateAndDire, result, index);
         //设置扩展
@@ -55,8 +60,30 @@ public class GPSUtils {
 
     }
 
+    /**
+     * 获得电话号码
+     * 电话号码的长度
+     * 长度不够补空格0x20
+     *
+     * @param phone
+     * @return
+     */
+    private static byte[] setPhone(String phone, int len) {
+        byte[] bytes = new byte[len];
+        String phone_unicode = BinaryUtils.string2Unicode(phone);
+        //将unicode转为二进制
+        byte[] binary = BinaryUtils.getoxBinary(phone_unicode);
+        int index = 0;
+        for (int i = 0; i < binary.length; i++) {
+            bytes[index++] = binary[i];
+        }
+        for (int i = index; i < len; i++) {
+            bytes[i] = 0x20;
+        }
+        return bytes;
+    }
 
-    private static byte[] setGPSContent(DateTime time, int len, int satelliteNumber, EarthPoint point, int speed, GpsStateDir gpsStateDir, byte[] ext_content, String phone) {
+    private static byte[] setGPSAddressContent(DateTime time, int len, int satelliteNumber, EarthPoint point, int speed, GpsStateDir gpsStateDir, byte[] ext_content, String phone) {
         //设置时间
         byte[] time_bytes = setTime(time);
         //设置信息长度和卫星数目
@@ -64,13 +91,17 @@ public class GPSUtils {
         //设置经纬度
         byte[] earth_point_bytes = setLatitudeAndLongitude(point);
         //设置速度
-        byte speed_byte = setSpeed(speed);
+        byte[] speed_byte = setSpeed(speed);
         //设置状态和方向
         byte[] stateAndDire = setStateAndDire(gpsStateDir.getRun_dir_c(), gpsStateDir.getLatitude_dir(), gpsStateDir.getLongitude_dir(), gpsStateDir.getGps_state(), gpsStateDir.getGps_time());
-        if (phone!=null){
-
-        }
-        int byte_len = time_bytes.length + 1 + earth_point_bytes.length + 1 + stateAndDire.length;
+        //设置电话
+        byte[] phone_bytes = setPhone(phone, GpsInfo.Phone_L);
+        int byte_len = time_bytes.length
+                + GpsInfo.len_satelliteNumber_L//GPS信息和卫星数所占长度
+                + earth_point_bytes.length
+                + GpsInfo.speed_L//速度所占长度
+                + stateAndDire.length
+                + phone_bytes.length;
         //预留位
         if (ext_content != null) {
             byte_len += ext_content.length;
@@ -85,12 +116,12 @@ public class GPSUtils {
         //设置经纬度
         index = setResult(earth_point_bytes, result, index);
         //设置速度
-        result[index++] = speed_byte;
+        index = setResult(speed_byte, result, index);
         //设置状态和方向
         index = setResult(stateAndDire, result, index);
 
         //设置电话
-
+        index = setResult(phone_bytes, result, index);
         //设置扩展
         if (ext_content != null) {
             setResult(ext_content, result, index);
@@ -121,8 +152,16 @@ public class GPSUtils {
     }
 
 
-    public static byte[] setGSPqueryAddress() {
-    return null;
+    /**
+     * GPS查询地址
+     *
+     * @param info gps 信息
+     *             语言在gps的预留扩展位里面
+     * @return
+     */
+    public static byte[] setGSPqueryAddress(GpsInfo info) {
+        return setGPSAddressContent(info.getTime(), info.getLen(), info.getSatelliteNumber(), info.getPoint(), info.getSpeed(), info.getGpsStateDir(), info.getExt_content(), info.getmPhone());
+
     }
 
 
@@ -151,18 +190,18 @@ public class GPSUtils {
         //计算纬度
         EarthPoint.Latitude latitude = point.getLatitude();
         double latitude_d = (latitude.getLatitude_c() * 60 + latitude.getLatitude_m()) * 30000;
-        byte[] latitude_bytes = BinaryUtils.getBytes((int) latitude_d, 4);
+        byte[] latitude_bytes = BinaryUtils.getBytes((int) latitude_d, GpsInfo.point_L / 2);
 
         EarthPoint.Longitude longitude = point.getLongitude();
         double longitude_d = (longitude.getLongitude_c() * 60 + longitude.getLongitude_m()) * 30000;
-        byte[] longtude_bytes = BinaryUtils.getBytes((int) longitude_d, 4);
+        byte[] longtude_bytes = BinaryUtils.getBytes((int) longitude_d, GpsInfo.point_L / 2);
 
-        byte[] bytes = new byte[8];
+        byte[] bytes = new byte[GpsInfo.point_L];
         for (int i = 0; i < latitude_bytes.length; i++) {
             bytes[i] = latitude_bytes[i];
         }
         for (int i = 0; i < longtude_bytes.length; i++) {
-            bytes[i + 4] = longtude_bytes[i];
+            bytes[i + GpsInfo.point_L / 2] = longtude_bytes[i];
         }
 
 
@@ -186,8 +225,8 @@ public class GPSUtils {
      * @param speed 0~255
      * @return
      */
-    private static byte setSpeed(int speed) {
-        return BinaryUtils.getByte(speed);
+    private static byte[] setSpeed(int speed) {
+        return BinaryUtils.getBytes(speed, GpsInfo.speed_L);
     }
 
     /**

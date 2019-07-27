@@ -257,6 +257,10 @@ public class BinaryUtils {
 
 
     /**
+     * 由于java中字节是带符号位的
+     * 所以如果一个16进制或者二进制的意义的byte不能直接转成int型换算过来
+     * 应该通过getInt转成参数n传进来
+     *
      * @param n 必须是一个字节的 或者根据getInt转过的int
      * @return
      */

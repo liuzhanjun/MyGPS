@@ -15,17 +15,33 @@ import org.joda.time.DateTime;
 public class GpsInfo {
     private int listNo;//信息序列号
     private DateTime time;//时间
+    public static final int time_L = 6;//时间所占长度
     private int len;//信息长度
     private int satelliteNumber;//卫星数
+    public static final int len_satelliteNumber_L = 1;//len 和satelliteNumber所占长度
     private EarthPoint point;//经纬度
+    public static final int point_L = 8;//经纬度所占长度 经度纬度各占1
     private int speed;//速度
+    public static final int speed_L = 1;
     private GpsStateDir gpsStateDir;//gps状态信息
+    public static final int gpsStateDir_L = 2;
     private byte[] ext_content = null;//预留扩展位信息
+    private String mPhone;
+    public static final int Phone_L = 21;
 
 
     public GpsInfo addListNo(int listNo) {
         this.listNo = listNo;
         return this;
+    }
+
+    public GpsInfo addPhone(String mPhone) {
+        this.mPhone = mPhone;
+        return this;
+    }
+
+    public String getmPhone() {
+        return mPhone;
     }
 
     public GpsInfo addTime(DateTime time) {

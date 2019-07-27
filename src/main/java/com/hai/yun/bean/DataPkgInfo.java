@@ -2,6 +2,7 @@ package com.hai.yun.bean;
 
 import com.hai.yun.bean.utils.CRC16;
 import com.hai.yun.bean.utils.BinaryUtils;
+import org.joda.time.DateTime;
 
 public class DataPkgInfo {
     /**
@@ -10,29 +11,71 @@ public class DataPkgInfo {
     private final byte[] mSTARTBIT = {0x78, 0x78};
 
     //包长度
-    private byte mPkgLength;
+    private byte[] mPkgLength;
+    //包长度所占字节长度（此属性用于后面计算，以及以后修改属性的字节长度）
+    private final int mPkgLength_L = 1;
 
     /**
      * 协议号
      */
-    private byte mAgreeMentNO;
+    private byte[] mAgreeMentNO;
+    private final int mAgreeMentNO_L = 1;
     //信息内容
     private byte[] mContent;
 
     //信息序列号长度为2
     private byte[] mInfolist;
+    private final int mInfolist_L = 2;
     //校验位长度2字节
     private byte[] mCheckBit;
+    private final int mCheckBit_L = 2;
     //停止位 长度位2
-    private byte[] mStopBit = {0x0D, 0x0A}; //停止位 长度位2
+    private final byte[] mStopBit = {0x0D, 0x0A}; //停止位 长度位2
 
 
     private DataPkgInfo() {
 
     }
 
+
+    public byte[] getmSTARTBIT() {
+        return mSTARTBIT;
+    }
+
+    public byte[] getmPkgLength() {
+        return mPkgLength;
+    }
+
+    public byte[] getmAgreeMentNO() {
+        return mAgreeMentNO;
+    }
+
+    public byte[] getmContent() {
+        return mContent;
+    }
+
+    public byte[] getmInfolist() {
+        return mInfolist;
+    }
+
+    public byte[] getmCheckBit() {
+        return mCheckBit;
+    }
+
+    public byte[] getmStopBit() {
+        return mStopBit;
+    }
+
     public byte[] getDataPkg() {
-        byte[] content = new byte[10 + mContent.length];
+        //包的总长度
+        int all_pkg_len = mSTARTBIT.length//起始位长度
+                + mPkgLength_L//包长度
+                + mAgreeMentNO_L//协议号长度
+                + mContent.length//信息内容长度
+                + mInfolist_L//信息序列号长度
+                + mCheckBit_L//校验位长度
+                + mStopBit.length;//停止位长度
+        byte[] content = new byte[all_pkg_len];
         //添加起始位
         int index = 0;
         index = addInfo(content, index, mSTARTBIT);
@@ -46,16 +89,21 @@ public class DataPkgInfo {
 
     private void dealStopBit(byte[] content, int index) {
 
-        int paklen = BinaryUtils.getInt(mPkgLength);
-        //用来存放包长度到信息序列号的数组
-        byte[] dealBytes = new byte[paklen - 1];
+
+        int paklen = BinaryUtils.getInt(mPkgLength) + mPkgLength_L - mCheckBit_L;
+
+        //用来存放包长度到信息序列号的数组(校验的信息内容长度=包长度的内容所表示的长度+包长度的字节长度-检验位的长度)
+        byte[] dealBytes = new byte[paklen];
         int dIndex = 0;
         //包长度
-        content[index++] = mPkgLength;
-        dealBytes[dIndex++] = mPkgLength;
+        index = addInfo(content, index, mPkgLength);
+        dIndex = addInfo(dealBytes, dIndex, mPkgLength);
+
         //协议号
-        content[index++] = mAgreeMentNO;
-        dealBytes[dIndex++] = mAgreeMentNO;
+        index = addInfo(content, index, mAgreeMentNO);
+        dIndex = addInfo(dealBytes, dIndex, mAgreeMentNO);
+
+
         //信息内容
         index = addInfo(content, index, mContent);
         dIndex = addInfo(dealBytes, dIndex, mContent);
@@ -68,7 +116,7 @@ public class DataPkgInfo {
 
         index = addInfo(content, index, crc);
         //停止位
-        index = addInfo(content, index, mStopBit);
+        addInfo(content, index, mStopBit);
 
     }
 
@@ -86,7 +134,7 @@ public class DataPkgInfo {
         /**
          * 协议号
          */
-        private byte agreeMentNO;
+        private byte[] agreeMentNO;
         //信息内容
         private byte[] content;
 
@@ -99,16 +147,17 @@ public class DataPkgInfo {
             dataPkgInfo.mAgreeMentNO = this.agreeMentNO;
             dataPkgInfo.mContent = this.content;
             dataPkgInfo.mInfolist = this.infolist;
-            int len = 5 + content.length;
-            if (len > 255) {
-                throw new IndexOutOfBoundsException("长度不能超过255");
-            }
-            dataPkgInfo.mPkgLength = BinaryUtils.getBytes(len, 1)[0];
+            int len = dataPkgInfo.mAgreeMentNO_L //协议号长度
+                    + content.length//内容长度
+                    + dataPkgInfo.mInfolist_L//信息序列号长度
+                    + dataPkgInfo.mCheckBit_L;//校验位长度
+
+            dataPkgInfo.mPkgLength = BinaryUtils.getBytes(len, dataPkgInfo.mPkgLength_L);
             return dataPkgInfo;
         }
 
         //设置协议号
-        public Builder setAgreeMentNo(byte amNO) {
+        public Builder setAgreeMentNo(byte[] amNO) {
             this.agreeMentNO = amNO;
             return this;
         }

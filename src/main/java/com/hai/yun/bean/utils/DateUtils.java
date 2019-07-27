@@ -22,4 +22,23 @@ public class DateUtils {
         return bytes;
 
     }
+
+
+    /**
+     * 获得时间
+     *
+     * @param times
+     * @return
+     */
+    public static DateTime getTime(byte[] times) {
+        int year = 2000 + BinaryUtils.getInt(times[0]);
+        int month = BinaryUtils.getInt(times[1]);
+        int day = BinaryUtils.getInt(times[2]);
+        int hours = BinaryUtils.getInt(times[3]);
+        int minute = BinaryUtils.getInt(times[4]);
+        int seconde = BinaryUtils.getInt(times[5]);
+        DateTime dateTime = new DateTime(year, month, day, hours, minute, seconde);
+
+        return dateTime;
+    }
 }

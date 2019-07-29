@@ -210,14 +210,97 @@ public enum GpsSessionManager {
      * 解析查询地址回复
      *
      * @param bytes
+     * @param tip   0位中文，1为英文
      * @return
      */
-    public byte analysisQueryAddressPkg(byte[] bytes) {
-        return 1;
+    public AnalysisAddressInfo analysisQueryAddressPkg(byte[] bytes, int tip) {
+        AnalysisAddressInfo info = new AnalysisAddressInfo();
+        byte[] pkg_len = null;
+        if (tip == 0) {
+            info.setmPkgLength_L(1);
+            info.setmCommandLen_L(1);
+            pkg_len = new byte[]{bytes[2]};
+        } else if (tip == 1) {
+            info.setmPkgLength_L(2);
+            info.setmCommandLen_L(2);
+            pkg_len = new byte[]{bytes[2], bytes[3]};
+        }
+        int pkg_len_ = BinaryUtils.getInt(pkg_len);
+        //地址信息长度=包长度表示的长度-（协议号到校验位的长度）
+        int address_len = pkg_len_ - (info.getmAgreeMentNO_L()
+                + info.getmCommandLen_L()
+                + info.getmService_tip_L()
+                + info.getmAddress_const().length
+                + info.getSeparator_1().length
+                + info.getSeparator_2().length
+                + info.getmPhone_L()
+                + info.getEnd_str().length
+                + info.getmInfolist_L()
+                + info.getmCheckBit_L()
+        );
+
+        System.out.println(address_len);
+
+        int index = 2;
+        //设置长度
+        info.setmPkgLength(pkg_len);
+        index += 2;
+        //设置协议号
+        info.setmAgreeMentNO(getBytes(bytes, index, info.getmAgreeMentNO_L()));
+
+        index += info.getmAgreeMentNO_L();
+        //设置指令长度
+        info.setmCommandLen(getBytes(bytes, index, info.getmCommandLen_L()));
+        index += info.getmCommandLen_L();
+        //设置服务器标志
+        info.setmService_tip(getBytes(bytes, index, info.getmService_tip_L()));
+        index += info.getmService_tip_L();
+        //过ADDRESS  已有
+        index += info.getmAddress_const().length;
+        //过分隔符
+        index += info.getSeparator_1().length;
+        //设置地址内容
+        info.setmAddress_unicode(getBytes(bytes, index, address_len));
+        index += address_len;
+        //过分隔符
+        index += info.getSeparator_2().length;
+        //设置手机号码
+        info.setmPhone(getBytes(bytes, index, info.getmPhone_L()));
+        index += info.getmPhone_L();
+        //过结束符
+        index += info.getEnd_str().length;
+        //设置序列号
+        info.setmInfolist(getBytes(bytes, index, info.getmInfolist_L()));
+        index += info.getmInfolist_L();
+        //设置校验位
+        info.setmCheckBit(getBytes(bytes, index, info.getmCheckBit_L()));
+
+
+        System.out.println("index=" + index);
+
+
+        return info;
+    }
+
+    /**
+     * 从bytes中获得 start开始 长度为len的数组
+     *
+     * @param bytes
+     * @param start
+     * @param len
+     * @return
+     */
+    private byte[] getBytes(byte[] bytes, int start, int len) {
+        byte[] re_bytes = new byte[len];
+        int index = 0;
+        for (int i = start; i < start + len; i++) {
+            re_bytes[index++] = bytes[i];
+        }
+        return re_bytes;
     }
 
 
-    private byte[] dealBuilder(byte [] agreeMentNO, byte[] content, int listNo) {
+    private byte[] dealBuilder(byte[] agreeMentNO, byte[] content, int listNo) {
 
         //登录信息
         DataPkgInfo datap = builder

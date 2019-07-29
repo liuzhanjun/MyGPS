@@ -27,12 +27,12 @@ public class AgreeMentNos {
     public static final byte[] LBSMultipleBaseStations = {0x18};
     //LBS多基站+wifi定位信息
     public static final byte[] LBSWIFIMultipBaseStations = {0x2C};
-    //IMSI号上报平台信息 //可能有问题0x90
-    public static final byte[] IMSISendInfo = BinaryUtils.getBytes(144, 1);
+    //IMSI号上报平台信息 //
+    public static final byte[] IMSISendInfo = BinaryUtils.getBytes(0x90, 1);
     //ICCID号上报平台信息0x94
-    public static final byte[] ICCIDSendInfo = BinaryUtils.getBytes(148, 1);
+    public static final byte[] ICCIDSendInfo = BinaryUtils.getBytes(0x94, 1);
     //录音文件上报平台信息0x8D
-    public static final byte[] recordFileSend = BinaryUtils.getBytes(141, 1);
+    public static final byte[] recordFileSend = BinaryUtils.getBytes(0x8d, 1);
     //服务器向终端发送信息0x80
-    public static final byte[] serviceSendToClient = BinaryUtils.getBytes(128, 1);
+    public static final byte[] serviceSendToClient = BinaryUtils.getBytes(0x80, 1);
 }

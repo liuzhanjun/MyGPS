@@ -135,8 +135,10 @@ public class BinaryUtils {
 
     /**
      * unicode转字符串
+     * 转单个字符
      *
-     * @param unicode 转单个字符
+     * @param unicode 16进制的字符串
+     *                通过byteToOx获得16进制字符
      * @return
      */
     public static char unicodeTochar(String unicode) {
@@ -326,4 +328,27 @@ public class BinaryUtils {
         return result;
     }
 
+
+    /**
+     * 获得电话号码
+     * 电话号码的长度
+     * 长度不够补空格0x20
+     *
+     * @param phone
+     * @return
+     */
+    public static byte[] getPhoneBytes(String phone, int len) {
+        byte[] bytes = new byte[len];
+        String phone_unicode = BinaryUtils.string2Unicode(phone);
+        //将unicode转为二进制
+        byte[] binary = BinaryUtils.getoxBinary(phone_unicode);
+        int index = 0;
+        for (int i = 0; i < binary.length; i++) {
+            bytes[index++] = binary[i];
+        }
+        for (int i = index; i < len; i++) {
+            bytes[i] = 0x20;
+        }
+        return bytes;
+    }
 }

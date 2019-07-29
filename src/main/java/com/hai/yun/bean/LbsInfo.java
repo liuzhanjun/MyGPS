@@ -14,11 +14,18 @@ import org.joda.time.DateTime;
 public class LbsInfo {
     private int listNo;//信息序列号
     private DateTime time;//时间
-    private int mcc;//移动用户所属国家代号 
+    private int mcc;//移动用户所属国家代号
+    public static final int mMcc_L = 2;//mMcc所占长度
     private int mnc;//移动网号码
+    public static final int mMnc_L = 1;//mMnc所占长度
     private int lac;//位置区码
+    public static final int mLac_L = 2;//mLac所占长度
     private int cellId;//移动基站
+    public static final int cellId_L = 3;//cellId所占长度
+
     private byte[] extContent;//预留扩展位
+    private String mPhone;//电话号码
+    public static final int Phone_L = 21;//电话号码所占字节数
 
     public byte[] getExtContent() {
         return extContent;
@@ -27,6 +34,11 @@ public class LbsInfo {
     public LbsInfo addExtContent(byte[] extContent) {
         this.extContent = extContent;
         return this;
+    }
+
+
+    public String getmPhone() {
+        return mPhone;
     }
 
     public LbsInfo addListNo(int listNo) {

@@ -300,6 +300,40 @@ public enum GpsSessionManager {
     }
 
 
+    /**
+     * LBS查询地址
+     *
+     * @param info
+     * @return
+     */
+    public byte[] lBSAddressQuery(LbsInfo info) {
+        byte[] bytes = LBSUtils.setLBSQueryAddressContent(info);
+        return dealBuilder(AgreeMentNos.queryAddressLBS, bytes, info.getListNo());
+    }
+
+    /**
+     * 0x2C
+     *
+     * @param info lbs多基站wifi定位完整信息
+     * @return
+     */
+    public byte[] lbsMultiAndWifiPostion(LbsMultiWifiPostionInfo info) {
+        byte[] bytes = LBSUtils.setLbsMultiAndWifiPostion(info);
+        return dealBuilder(AgreeMentNos.LBSWIFIMultipBaseStations, bytes, info.getmListNo());
+
+    }
+
+    /**
+     * 终端向后台发送IMSI信息
+     *
+     * @param IMSI
+     * @return
+     */
+    public byte[] getIMSI(String IMSI) {
+        return TerminalUtils.getIMSIAllContent(IMSI);
+    }
+
+
     private byte[] dealBuilder(byte[] agreeMentNO, byte[] content, int listNo) {
 
         //登录信息

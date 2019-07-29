@@ -197,7 +197,7 @@ public class GpsSessionManagerTest {
             System.out.print(BinaryUtils.unicodeTochar(ox));
         }
         System.out.println();
-        System.out.println("校验位");
+        System.out.print("校验位：");
         //获得校验位
         byte[] bytes3 = analysisAddressInfo.getmCheckBit();
         for (byte b : bytes3) {
@@ -207,5 +207,14 @@ public class GpsSessionManagerTest {
 
         }
 
+    }
+
+    @Test
+    public void getIMSI() {
+        //\34\36\30\35\39\35\34\38\35\32\31\34\35\36\35
+        byte[] imsi = SessionManager.getIMSI("460595485214565");
+        for (byte b : imsi) {
+            System.out.print("|"+BinaryUtils.byteToOx(BinaryUtils.getInt(b)));
+        }
     }
 }

@@ -60,28 +60,7 @@ public class GPSUtils {
 
     }
 
-    /**
-     * 获得电话号码
-     * 电话号码的长度
-     * 长度不够补空格0x20
-     *
-     * @param phone
-     * @return
-     */
-    private static byte[] setPhone(String phone, int len) {
-        byte[] bytes = new byte[len];
-        String phone_unicode = BinaryUtils.string2Unicode(phone);
-        //将unicode转为二进制
-        byte[] binary = BinaryUtils.getoxBinary(phone_unicode);
-        int index = 0;
-        for (int i = 0; i < binary.length; i++) {
-            bytes[index++] = binary[i];
-        }
-        for (int i = index; i < len; i++) {
-            bytes[i] = 0x20;
-        }
-        return bytes;
-    }
+
 
     private static byte[] setGPSAddressContent(DateTime time, int len, int satelliteNumber, EarthPoint point, int speed, GpsStateDir gpsStateDir, byte[] ext_content, String phone) {
         //设置时间
@@ -95,7 +74,7 @@ public class GPSUtils {
         //设置状态和方向
         byte[] stateAndDire = setStateAndDire(gpsStateDir.getRun_dir_c(), gpsStateDir.getLatitude_dir(), gpsStateDir.getLongitude_dir(), gpsStateDir.getGps_state(), gpsStateDir.getGps_time());
         //设置电话
-        byte[] phone_bytes = setPhone(phone, GpsInfo.Phone_L);
+        byte[] phone_bytes = BinaryUtils.getPhoneBytes(phone, GpsInfo.Phone_L);
         int byte_len = time_bytes.length
                 + GpsInfo.len_satelliteNumber_L//GPS信息和卫星数所占长度
                 + earth_point_bytes.length

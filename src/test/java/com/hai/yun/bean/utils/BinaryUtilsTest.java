@@ -48,4 +48,17 @@ public class BinaryUtilsTest {
 //        }
 
     }
+
+    @Test
+    public void stringToAscii() {
+        String d = BinaryUtils.stringToAscii_ox("DYD=Success!");
+        System.out.println(d);
+
+        byte[] bytes = BinaryUtils.getoxBinary(d);
+
+
+        
+
+
+    }
 }

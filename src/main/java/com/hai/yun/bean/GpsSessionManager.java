@@ -3,7 +3,6 @@ package com.hai.yun.bean;
 import com.hai.yun.bean.utils.*;
 import org.joda.time.DateTime;
 
-import java.util.Collections;
 
 /**
  * GPS会话信息 单例模式
@@ -324,6 +323,7 @@ public enum GpsSessionManager {
     }
 
     /**
+     * 0x90
      * 终端向后台发送IMSI信息
      *
      * @param IMSI
@@ -333,6 +333,78 @@ public enum GpsSessionManager {
         return TerminalUtils.getIMSIAllContent(IMSI);
     }
 
+    /**
+     * 终端向后台发送ICCID信息
+     * 0x94
+     *
+     * @param info_type 信息内容
+     * @param iccIdInfo
+     * @param listN0    信息序列号
+     * @return
+     */
+    public byte[] getICCID(int info_type, int listN0, IccIdInfo iccIdInfo) {
+        byte[] content = TerminalUtils.getICCIDContent(info_type, iccIdInfo);
+        return dealBuilder2(AgreeMentNos.ICCIDSendInfo, content, listN0, 2);
+    }
+
+    /**
+     * 0x8d
+     * 录音协议包
+     *
+     * @param listN0
+     * @param info
+     * @return
+     */
+    public byte[] record_voice_Content(int listN0, RecordVoiceInfo info) {
+        byte[] content = TerminalUtils.getRecordVoiceContent(info);
+        return dealBuilder2(AgreeMentNos.recordFileSend, content, listN0, 2);
+    }
+
+
+    /**
+     * 解析录音包返回信息
+     *
+     * @param pkg
+     * @return
+     */
+    public AnalysisRecordPkg AnalysisiRecordpkg(byte[] pkg) {
+        AnalysisRecordPkg analysisRecordPkg = new AnalysisRecordPkg();
+        //包长度
+        analysisRecordPkg.setmPkgLength(new byte[]{pkg[2], pkg[3]});
+        analysisRecordPkg.setmAgreeMentNO(pkg[4]);
+        analysisRecordPkg.setmAccept_state(pkg[5]);
+        analysisRecordPkg.setmInfolist(new byte[]{pkg[6], pkg[7]});
+        analysisRecordPkg.setmCheckBit(new byte[]{pkg[8], pkg[9]});
+        return analysisRecordPkg;
+    }
+
+
+    private byte[] dealBuilder2(byte[] agreeMentNO, byte[] content, int listNo, int pkg_len) {
+        DataPkgInfo.setmPkgLength_L(pkg_len);
+        //登录信息
+        DataPkgInfo datap = builder
+                //协议号
+                .setAgreeMentNo(agreeMentNO)
+                //内容
+                .appendContentStart(content)
+                //信息序列号
+                .setMInfolist(listNo)
+                .build();
+        return datap.getDataPkg();
+    }
+
+
+    /**
+     * 0x80
+     * @param info
+     * @param listNO
+     * @return
+     */
+    public byte[] sendCommandContent(CommandInfo info, int listNO) {
+        byte[] bytes = TerminalUtils.getCommandContent(info);
+        return dealBuilder(AgreeMentNos.serviceSendToClient, bytes, listNO);
+
+    }
 
     private byte[] dealBuilder(byte[] agreeMentNO, byte[] content, int listNo) {
 

@@ -1,5 +1,6 @@
 package com.hai.yun.bean.utils;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -88,16 +89,90 @@ public class BinaryUtils {
      * @return
      */
     public static byte[] getBytes(int data, int len) {
+        if (len > 4) {
+            len = 4;
+        }
         // 0   len-1
         //1   len-2
         // 2   len-3
+        // 3   len-4
         byte[] bytes = new byte[len];
         for (int i = 0; i < len; i++) {
-            bytes[len - i - 1] = (byte) ((data & (0xff << (i * 8))) >> (i * 8));
+            bytes[len - i - 1] = BinaryUtils.getByte((data & (0xff << (i * 8))) >> (i * 8));
         }
         return bytes;
     }
 
+
+    public static byte[] getBytes(long data) {
+        String s = Long.toHexString(data);
+        return getoxBinary(s);
+    }
+
+    public static byte[] getBytes(long data, int len) {
+        byte[] bytes = getoxBinary(Long.toHexString(data));
+        byte[] result = new byte[len];
+        int index = 0;
+        if (len < bytes.length) {
+            for (int i = bytes.length - len; i < bytes.length; i++) {
+                result[index++] = bytes[i];
+            }
+            return result;
+        } else {
+            return bytes;
+        }
+
+    }
+
+
+//    /**
+//     * 长整型转字节
+//     *
+//     * @param data
+//     * @param len
+//     * @return
+//     */
+//    public static byte[] getBytes(long data, int len) {
+//        // 0   len-1
+//        //1   len-2
+//        // 2   len-3
+//        // 3   len-4
+//        //4    len-5
+//
+//        //从高到低
+//        byte[] result = new byte[len];
+//        byte[] top_4 = getBytes((int) (data & (0xFFFFFFFF << 4)) >> 4, 4);
+//        byte[] low_4 = getBytes((int) (data & (0xFFFFFFFF)), 4);
+//        int index = 0;
+//        int top = len - 4;
+//        if (top > 0) {
+//            for (int i = 4 - top; i < 4; i++) {
+//                result[index++] = top_4[i];
+//            }
+//            setResult(low_4, result, index);
+//        } else {
+//            for (int i = 4 - len; i < 4; i++) {
+//                result[index++] = low_4[i];
+//            }
+//
+//        }
+//        return result;
+//    }
+
+    /**
+     * 将 bytes 添加到result中
+     *
+     * @param bytes
+     * @param result
+     * @param index
+     * @return
+     */
+    public static int setResult(byte[] bytes, byte[] result, int index) {
+        for (int i = 0; i < bytes.length; i++) {
+            result[index++] = bytes[i];
+        }
+        return index;
+    }
 
     /**
      * 获得一个整数的一个字节表示
@@ -182,6 +257,18 @@ public class BinaryUtils {
             count |= ((0xff << ((len - i - 1) * 8)) & bytes[i] << ((len - i - 1) * 8));
         }
         return count;
+    }
+
+    public static long getLong(byte[] bytes) {
+        StringBuffer buffer = new StringBuffer();
+        for (byte aByte : bytes) {
+            buffer.append(BinaryUtils.byteToOx(aByte));
+        }
+
+        long l = Long.parseLong(buffer.toString(), 16);
+        System.out.println("xxx" + l);
+
+        return l;
     }
 
     /**
@@ -276,6 +363,10 @@ public class BinaryUtils {
 
     }
 
+    public static String binary(byte[] bytes, int radix) {
+        return new BigInteger(1, bytes).toString(radix);// 这里的1代表正数
+    }
+
     /**
      * 将10进制数转为对应的16进制字符串
      *
@@ -351,4 +442,52 @@ public class BinaryUtils {
         }
         return bytes;
     }
+
+    /**
+     * 将字符串转换为ascill 的10进制字符串
+     *
+     * @param string
+     * @return
+     */
+    public static String stringToAscii_ten(String string) {
+
+        StringBuffer unicode = new StringBuffer();
+
+        for (int i = 0; i < string.length(); i++) {
+
+            // 取出每一个字符
+            char c = string.charAt(i);
+
+            // 转换为unicode
+            unicode.append(Integer.valueOf(c));
+
+        }
+
+        return unicode.toString();
+    }
+
+    /**
+     * 将字符串转换为ascill的16进制字符串
+     *
+     * @param string
+     * @return
+     */
+    public static String stringToAscii_ox(String string) {
+
+        StringBuffer unicode = new StringBuffer();
+
+        for (int i = 0; i < string.length(); i++) {
+
+            // 取出每一个字符
+            char c = string.charAt(i);
+
+            // 转换为unicode
+            unicode.append(byteToOx(Integer.valueOf(c)));
+
+        }
+
+        return unicode.toString();
+    }
+
+
 }

@@ -214,7 +214,26 @@ public class GpsSessionManagerTest {
         //\34\36\30\35\39\35\34\38\35\32\31\34\35\36\35
         byte[] imsi = SessionManager.getIMSI("460595485214565");
         for (byte b : imsi) {
-            System.out.print("|"+BinaryUtils.byteToOx(BinaryUtils.getInt(b)));
+            System.out.print("|" + BinaryUtils.byteToOx(BinaryUtils.getInt(b)));
         }
+    }
+
+    @Test
+    public void getICCID() {
+        IccIdInfo info = new IccIdInfo();
+        info.addmIMEI("0358091088001558")
+                .addmIMSI("0460041990205313")
+                .addmIccid("898607b9111730120313");
+        byte[] iccid = SessionManager.getICCID(0x0A, 1, info);
+        for (byte b : iccid) {
+            System.out.print("|" + BinaryUtils.byteToOx(BinaryUtils.getInt(b)));
+        }
+    }
+
+    @Test
+    public void record_voice_Content() {
+
+
+
     }
 }

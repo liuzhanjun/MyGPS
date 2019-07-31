@@ -13,30 +13,39 @@ public class DataPkgInfo {
     //包长度
     private byte[] mPkgLength;
     //包长度所占字节长度（此属性用于后面计算，以及以后修改属性的字节长度）
-    private final int mPkgLength_L = 1;
+    private  static int mPkgLength_L = 1;
 
     /**
      * 协议号
      */
     private byte[] mAgreeMentNO;
-    private final int mAgreeMentNO_L = 1;
+    public static  final int mAgreeMentNO_L = 1;
     //信息内容
     private byte[] mContent;
 
     //信息序列号长度为2
     private byte[] mInfolist;
-    private final int mInfolist_L = 2;
+    public static final int mInfolist_L = 2;
     //校验位长度2字节
     private byte[] mCheckBit;
-    private final int mCheckBit_L = 2;
+    public static final int mCheckBit_L = 2;
     //停止位 长度位2
     private final byte[] mStopBit = {0x0D, 0x0A}; //停止位 长度位2
+
+
 
 
     private DataPkgInfo() {
 
     }
 
+    public static int getmPkgLength_L() {
+        return mPkgLength_L;
+    }
+
+    public static void setmPkgLength_L(int mPkgLength_L) {
+        DataPkgInfo.mPkgLength_L = mPkgLength_L;
+    }
 
     public byte[] getmSTARTBIT() {
         return mSTARTBIT;
@@ -168,28 +177,9 @@ public class DataPkgInfo {
             return this;
         }
 
-//        /**
-//         * 追加内容
-//         *
-//         * @param appendContent
-//         * @return
-//         */
-//        public Builder appendContent(byte[] appendContent) {
-//            byte[] newContent = new byte[this.content.length + appendContent.length];
-//            for (int i = 0; i < this.content.length; i++) {
-//                newContent[i] = this.content[i];
-//            }
-//            for (int i = 0; i < appendContent.length; i++) {
-//                newContent[this.content.length + i] = appendContent[i];
-//            }
-//            this.content = newContent;
-//            return this;
-//        }
-
-
         //设置序列号
         public Builder setMInfolist(int num) {
-            this.infolist = BinaryUtils.getBytes(num, 2);
+            this.infolist = BinaryUtils.getBytes(num, DataPkgInfo.mInfolist_L);
             return this;
         }
 

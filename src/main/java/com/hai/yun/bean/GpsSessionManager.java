@@ -16,7 +16,7 @@ public enum GpsSessionManager {
         }
     };
 
-    public abstract GpsSessionManager getInstance();
+    public  abstract GpsSessionManager getInstance();
 
     private DataPkgInfo.Builder builder = new DataPkgInfo.Builder();
 
@@ -28,7 +28,7 @@ public enum GpsSessionManager {
      * @param listNo 信息序列号
      * @return
      */
-    public byte[] getLoginInfoPkg(String IMEI, int listNo) {
+    public synchronized  byte[] getLoginInfoPkg(String IMEI, int listNo) {
 
         return dealBuilder(AgreeMentNos.loginNO, BinaryUtils.getIMEI(IMEI), listNo);
     }
@@ -41,7 +41,7 @@ public enum GpsSessionManager {
      * @param infos 返回的信息
      * @return
      */
-    public AnalysisPkgInfo analysisCommonPkg(byte infos[]) {
+    public synchronized AnalysisPkgInfo analysisCommonPkg(byte infos[]) {
         AnalysisPkgInfo.AnalysisBuilder analysisBuilder = new AnalysisPkgInfo.AnalysisBuilder();
         //获得包长度
         byte pkglen = infos[2];
@@ -83,7 +83,7 @@ public enum GpsSessionManager {
      * @param info gps 信息包
      * @return
      */
-    public byte[] getGPSInfoPkg(GpsInfo info) {
+    public synchronized byte[] getGPSInfoPkg(GpsInfo info) {
         byte[] content = GPSUtils.setGPSContent(info);
         return dealBuilder(AgreeMentNos.gpsInfo, content, info.getListNo());
     }
@@ -95,7 +95,7 @@ public enum GpsSessionManager {
      * @param info lbs信息包
      * @return
      */
-    public byte[] getLBSPkg(LbsInfo info) {
+    public synchronized byte[] getLBSPkg(LbsInfo info) {
         byte[] content = LBSUtils.setLBSContent(info);
         return dealBuilder(AgreeMentNos.LBSInfo, content, info.getListNo());
     }
@@ -110,7 +110,7 @@ public enum GpsSessionManager {
      * @param lbsInfo lbs信息
      * @return
      */
-    public byte[] getGPSAndLBSpkg(int listNO, GpsInfo gpsInfo, LbsInfo lbsInfo) {
+    public synchronized byte[] getGPSAndLBSpkg(int listNO, GpsInfo gpsInfo, LbsInfo lbsInfo) {
         byte[] gps_bytes = GPSUtils.setGPSContent(gpsInfo);
         byte[] lbs_bytes = LBSUtils.setLBSContent(lbsInfo);
         byte[] lbs_re_bytes = new byte[lbs_bytes.length - 6];
@@ -130,7 +130,7 @@ public enum GpsSessionManager {
      * @param info 终端信息
      * @return
      */
-    public byte[] getBeartHeatPkg(HeartBeatInfo info) {
+    public synchronized byte[] getBeartHeatPkg(HeartBeatInfo info) {
         byte[] content = HeartBeatUtils.setHearteatContent(info);
         return dealBuilder(AgreeMentNos.heartbeat, content, info.getListNO());
     }
@@ -145,7 +145,7 @@ public enum GpsSessionManager {
      * @param extContent 预留扩展位
      * @return
      */
-    public byte[] getSateliteSnor(int listNo, int num, byte[] xzb, byte[] extContent) {
+    public synchronized byte[] getSateliteSnor(int listNo, int num, byte[] xzb, byte[] extContent) {
         return dealBuilder(AgreeMentNos.SSNIRInfo, SatelliteSnorUtils.setSateliteSnor(num, xzb, extContent), listNo);
     }
 
@@ -160,7 +160,7 @@ public enum GpsSessionManager {
      * @param info    终端信息
      * @return
      */
-    public byte[] getWarring(int listNO, GpsInfo gpsInfo, LbsInfo lbsInfo, HeartBeatInfo info) {
+    public synchronized byte[] getWarring(int listNO, GpsInfo gpsInfo, LbsInfo lbsInfo, HeartBeatInfo info) {
         //GPS
         byte[] gps_bytes = GPSUtils.setGPSContent(gpsInfo);
         //LBS
@@ -187,7 +187,7 @@ public enum GpsSessionManager {
      * @param info
      * @return
      */
-    public byte[] getLBSMultiStation(LbsMultiStationInfo info) {
+    public synchronized byte[] getLBSMultiStation(LbsMultiStationInfo info) {
         byte[] content = LBSUtils.setLBSMultiStationContent(info);
         return dealBuilder(AgreeMentNos.LBSMultipleBaseStations, content, info.getmListNo());
     }
@@ -200,7 +200,7 @@ public enum GpsSessionManager {
      * @param gpsInfo
      * @return
      */
-    public byte[] gpsQueryAddress(GpsInfo gpsInfo) {
+    public synchronized byte[] gpsQueryAddress(GpsInfo gpsInfo) {
         byte[] content = GPSUtils.setGSPqueryAddress(gpsInfo);
         return dealBuilder(AgreeMentNos.queryAddressGPS, content, gpsInfo.getListNo());
     }
@@ -212,7 +212,7 @@ public enum GpsSessionManager {
      * @param tip   0位中文，1为英文
      * @return
      */
-    public AnalysisAddressInfo analysisQueryAddressPkg(byte[] bytes, int tip) {
+    public synchronized AnalysisAddressInfo analysisQueryAddressPkg(byte[] bytes, int tip) {
         AnalysisAddressInfo info = new AnalysisAddressInfo();
         byte[] pkg_len = null;
         if (tip == 0) {
@@ -289,7 +289,7 @@ public enum GpsSessionManager {
      * @param len
      * @return
      */
-    private byte[] getBytes(byte[] bytes, int start, int len) {
+    private synchronized byte[] getBytes(byte[] bytes, int start, int len) {
         byte[] re_bytes = new byte[len];
         int index = 0;
         for (int i = start; i < start + len; i++) {
@@ -305,7 +305,7 @@ public enum GpsSessionManager {
      * @param info
      * @return
      */
-    public byte[] lBSAddressQuery(LbsInfo info) {
+    public synchronized byte[] lBSAddressQuery(LbsInfo info) {
         byte[] bytes = LBSUtils.setLBSQueryAddressContent(info);
         return dealBuilder(AgreeMentNos.queryAddressLBS, bytes, info.getListNo());
     }
@@ -316,7 +316,7 @@ public enum GpsSessionManager {
      * @param info lbs多基站wifi定位完整信息
      * @return
      */
-    public byte[] lbsMultiAndWifiPostion(LbsMultiWifiPostionInfo info) {
+    public synchronized byte[] lbsMultiAndWifiPostion(LbsMultiWifiPostionInfo info) {
         byte[] bytes = LBSUtils.setLbsMultiAndWifiPostion(info);
         return dealBuilder(AgreeMentNos.LBSWIFIMultipBaseStations, bytes, info.getmListNo());
 
@@ -329,7 +329,7 @@ public enum GpsSessionManager {
      * @param IMSI
      * @return
      */
-    public byte[] getIMSI(String IMSI) {
+    public  synchronized byte[] getIMSI(String IMSI) {
         return TerminalUtils.getIMSIAllContent(IMSI);
     }
 
@@ -342,7 +342,7 @@ public enum GpsSessionManager {
      * @param listN0    信息序列号
      * @return
      */
-    public byte[] getICCID(int info_type, int listN0, IccIdInfo iccIdInfo) {
+    public  synchronized byte[] getICCID(int info_type, int listN0, IccIdInfo iccIdInfo) {
         byte[] content = TerminalUtils.getICCIDContent(info_type, iccIdInfo);
         return dealBuilder2(AgreeMentNos.ICCIDSendInfo, content, listN0, 2);
     }
@@ -355,7 +355,7 @@ public enum GpsSessionManager {
      * @param info
      * @return
      */
-    public byte[] record_voice_Content(int listN0, RecordVoiceInfo info) {
+    public  synchronized byte[] record_voice_Content(int listN0, RecordVoiceInfo info) {
         byte[] content = TerminalUtils.getRecordVoiceContent(info);
         return dealBuilder2(AgreeMentNos.recordFileSend, content, listN0, 2);
     }
@@ -367,7 +367,7 @@ public enum GpsSessionManager {
      * @param pkg
      * @return
      */
-    public AnalysisRecordPkg AnalysisiRecordpkg(byte[] pkg) {
+    public synchronized  AnalysisRecordPkg AnalysisiRecordpkg(byte[] pkg) {
         AnalysisRecordPkg analysisRecordPkg = new AnalysisRecordPkg();
         //包长度
         analysisRecordPkg.setmPkgLength(new byte[]{pkg[2], pkg[3]});
@@ -379,7 +379,7 @@ public enum GpsSessionManager {
     }
 
 
-    private byte[] dealBuilder2(byte[] agreeMentNO, byte[] content, int listNo, int pkg_len) {
+    private  synchronized byte[] dealBuilder2(byte[] agreeMentNO, byte[] content, int listNo, int pkg_len) {
         DataPkgInfo.setmPkgLength_L(pkg_len);
         //登录信息
         DataPkgInfo datap = builder
@@ -400,13 +400,13 @@ public enum GpsSessionManager {
      * @param listNO
      * @return
      */
-    public byte[] sendCommandContent(CommandInfo info, int listNO) {
+    public  synchronized byte[] sendCommandContent(CommandInfo info, int listNO) {
         byte[] bytes = TerminalUtils.getCommandContent(info);
         return dealBuilder(AgreeMentNos.serviceSendToClient, bytes, listNO);
 
     }
 
-    private byte[] dealBuilder(byte[] agreeMentNO, byte[] content, int listNo) {
+    private  synchronized byte[] dealBuilder(byte[] agreeMentNO, byte[] content, int listNo) {
 
         //登录信息
         DataPkgInfo datap = builder

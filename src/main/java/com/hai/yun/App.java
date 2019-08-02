@@ -1,8 +1,10 @@
 package com.hai.yun;
 
 import com.hai.yun.bean.GpsSessionManager;
+import com.hai.yun.bean.utils.BinaryUtils;
 import com.hai.yun.net.BaseHandler;
 import com.hai.yun.net.MinaTcpClient;
+import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
 
 /**
@@ -13,16 +15,9 @@ public class App {
 
         MinaTcpClient.client.init();
 
-        MinaTcpClient.client.setHandler(new BaseHandler() {
-            @Override
-            public void dealMessage(IoSession mSession, Object msg) {
-
-            }
-
-
-        });
-
-
+        MinaTcpClient.client.sendMessage(GpsSessionManager.SessionManager.getIMSI("460595485214565"));
+        MinaTcpClient.client.sendMessage(GpsSessionManager.SessionManager.getIMSI("460595485214565"));
+        MinaTcpClient.client.sendMessage(GpsSessionManager.SessionManager.getIMSI("460595485214565"));
         MinaTcpClient.client.sendMessage(GpsSessionManager.SessionManager.getIMSI("460595485214565"));
 
 

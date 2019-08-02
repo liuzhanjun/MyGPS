@@ -467,8 +467,6 @@ public class BinaryUtils {
     }
 
     /**
-     * 将字符串转换为ascill的16进制字符串
-     *
      * @param string
      * @return
      */
@@ -489,5 +487,18 @@ public class BinaryUtils {
         return unicode.toString();
     }
 
+    /**
+     * bytes转字符串
+     *
+     * @param bytes
+     * @return
+     */
+    public static String bytesToString(byte[] bytes) {
+        StringBuffer buffer = new StringBuffer();
+        for (byte aByte : bytes) {
+            buffer.append((char) getInt(aByte));
+        }
+        return buffer.toString();
+    }
 
 }

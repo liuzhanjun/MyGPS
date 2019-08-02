@@ -51,12 +51,15 @@ public class BinaryUtilsTest {
 
     @Test
     public void stringToAscii() {
-        String d = BinaryUtils.stringToAscii_ox("DYD=Success!");
-        System.out.println(d);
+        String d = BinaryUtils.stringToAscii_ox("DYD=Success!123412");
+        String d2 = BinaryUtils.string2Unicode("DYD=Success!123412");
+        System.out.println("d1="+d);
+        System.out.println("d2="+d2);
 
         byte[] bytes = BinaryUtils.getoxBinary(d);
 
-
+        String s = BinaryUtils.bytesToString(bytes);
+        System.out.println(s);
         
 
 

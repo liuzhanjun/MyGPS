@@ -16,7 +16,7 @@ public enum GpsSessionManager {
         }
     };
 
-    public  abstract GpsSessionManager getInstance();
+    public abstract GpsSessionManager getInstance();
 
     private DataPkgInfo.Builder builder = new DataPkgInfo.Builder();
 
@@ -28,7 +28,7 @@ public enum GpsSessionManager {
      * @param listNo 信息序列号
      * @return
      */
-    public synchronized  byte[] getLoginInfoPkg(String IMEI, int listNo) {
+    public synchronized byte[] getLoginInfoPkg(String IMEI, int listNo) {
 
         return dealBuilder(AgreeMentNos.loginNO, BinaryUtils.getIMEI(IMEI), listNo);
     }
@@ -329,7 +329,7 @@ public enum GpsSessionManager {
      * @param IMSI
      * @return
      */
-    public  synchronized byte[] getIMSI(String IMSI) {
+    public synchronized byte[] getIMSI(String IMSI) {
         return TerminalUtils.getIMSIAllContent(IMSI);
     }
 
@@ -342,7 +342,7 @@ public enum GpsSessionManager {
      * @param listN0    信息序列号
      * @return
      */
-    public  synchronized byte[] getICCID(int info_type, int listN0, IccIdInfo iccIdInfo) {
+    public synchronized byte[] getICCID(int info_type, int listN0, IccIdInfo iccIdInfo) {
         byte[] content = TerminalUtils.getICCIDContent(info_type, iccIdInfo);
         return dealBuilder2(AgreeMentNos.ICCIDSendInfo, content, listN0, 2);
     }
@@ -355,7 +355,7 @@ public enum GpsSessionManager {
      * @param info
      * @return
      */
-    public  synchronized byte[] record_voice_Content(int listN0, RecordVoiceInfo info) {
+    public synchronized byte[] record_voice_Content(int listN0, RecordVoiceInfo info) {
         byte[] content = TerminalUtils.getRecordVoiceContent(info);
         return dealBuilder2(AgreeMentNos.recordFileSend, content, listN0, 2);
     }
@@ -367,7 +367,7 @@ public enum GpsSessionManager {
      * @param pkg
      * @return
      */
-    public synchronized  AnalysisRecordPkg AnalysisiRecordpkg(byte[] pkg) {
+    public synchronized AnalysisRecordPkg AnalysisiRecordpkg(byte[] pkg) {
         AnalysisRecordPkg analysisRecordPkg = new AnalysisRecordPkg();
         //包长度
         analysisRecordPkg.setmPkgLength(new byte[]{pkg[2], pkg[3]});
@@ -379,10 +379,11 @@ public enum GpsSessionManager {
     }
 
 
-    private  synchronized byte[] dealBuilder2(byte[] agreeMentNO, byte[] content, int listNo, int pkg_len) {
-        DataPkgInfo.setmPkgLength_L(pkg_len);
+    private synchronized byte[] dealBuilder2(byte[] agreeMentNO, byte[] content, int listNo, int pkg_len) {
         //登录信息
         DataPkgInfo datap = builder
+                .setmSTARTBIT(DataPkgInfo.mSTARTBIT_2)
+                .setmPkgLength_L(pkg_len)
                 //协议号
                 .setAgreeMentNo(agreeMentNO)
                 //内容
@@ -396,17 +397,18 @@ public enum GpsSessionManager {
 
     /**
      * 0x80
+     *
      * @param info
      * @param listNO
      * @return
      */
-    public  synchronized byte[] sendCommandContent(CommandInfo info, int listNO) {
+    public synchronized byte[] sendCommandContent(CommandInfo info, int listNO) {
         byte[] bytes = TerminalUtils.getCommandContent(info);
         return dealBuilder(AgreeMentNos.serviceSendToClient, bytes, listNO);
 
     }
 
-    private  synchronized byte[] dealBuilder(byte[] agreeMentNO, byte[] content, int listNo) {
+    private synchronized byte[] dealBuilder(byte[] agreeMentNO, byte[] content, int listNo) {
 
         //登录信息
         DataPkgInfo datap = builder

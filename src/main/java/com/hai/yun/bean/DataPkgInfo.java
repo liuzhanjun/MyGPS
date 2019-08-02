@@ -8,18 +8,18 @@ public class DataPkgInfo {
     /**
      * 起始位
      */
-    private final byte[] mSTARTBIT = {0x78, 0x78};
-
+    private byte[] mSTARTBIT = {0x78, 0x78};
+    public static final byte[] mSTARTBIT_2 = {0x79, 0x79};
     //包长度
     private byte[] mPkgLength;
     //包长度所占字节长度（此属性用于后面计算，以及以后修改属性的字节长度）
-    private  static int mPkgLength_L = 1;
+    private int mPkgLength_L = 1;
 
     /**
      * 协议号
      */
     private byte[] mAgreeMentNO;
-    public static  final int mAgreeMentNO_L = 1;
+    public final int mAgreeMentNO_L = 1;
     //信息内容
     private byte[] mContent;
 
@@ -33,18 +33,16 @@ public class DataPkgInfo {
     private final byte[] mStopBit = {0x0D, 0x0A}; //停止位 长度位2
 
 
-
-
     private DataPkgInfo() {
 
     }
 
-    public static int getmPkgLength_L() {
+    public int getmPkgLength_L() {
         return mPkgLength_L;
     }
 
-    public static void setmPkgLength_L(int mPkgLength_L) {
-        DataPkgInfo.mPkgLength_L = mPkgLength_L;
+    public void setmPkgLength_L(int mPkgLength_L) {
+        this.mPkgLength_L = mPkgLength_L;
     }
 
     public byte[] getmSTARTBIT() {
@@ -139,6 +137,7 @@ public class DataPkgInfo {
 
 
     public static class Builder {
+        private byte[] mSTARTBIT = {0x78, 0x78};
 
         /**
          * 协议号
@@ -150,9 +149,11 @@ public class DataPkgInfo {
         //信息序列号长度为2
         private byte[] infolist;
 
+        private int mPkgLength_L;
 
         public DataPkgInfo build() {
             DataPkgInfo dataPkgInfo = new DataPkgInfo();
+            dataPkgInfo.mPkgLength_L = mPkgLength_L;
             dataPkgInfo.mAgreeMentNO = this.agreeMentNO;
             dataPkgInfo.mContent = this.content;
             dataPkgInfo.mInfolist = this.infolist;
@@ -165,9 +166,20 @@ public class DataPkgInfo {
             return dataPkgInfo;
         }
 
+
+        public Builder setmSTARTBIT(byte[] mSTARTBIT) {
+            this.mSTARTBIT = mSTARTBIT;
+            return this;
+        }
+
         //设置协议号
         public Builder setAgreeMentNo(byte[] amNO) {
             this.agreeMentNO = amNO;
+            return this;
+        }
+
+        public Builder setmPkgLength_L(int mPkgLength_L) {
+            this.mPkgLength_L = mPkgLength_L;
             return this;
         }
 

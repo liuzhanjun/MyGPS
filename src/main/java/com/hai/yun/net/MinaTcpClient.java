@@ -1,10 +1,14 @@
 package com.hai.yun.net;
 
 import com.hai.yun.bean.GpsSessionManager;
+import com.hai.yun.bean.HeartBeatInfo;
+import com.hai.yun.bean.InfolistNo;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.future.ConnectFuture;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IoSession;
+import org.apache.mina.filter.codec.ProtocolCodecFilter;
+import org.apache.mina.filter.codec.textline.TextLineCodecFactory;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,7 +22,7 @@ public enum MinaTcpClient {
         @Override
         public MinaTcpClient init() {
             System.out.println("==============");
-            sendHeartBeat();
+
             conn();
             return this;
         }
@@ -37,6 +41,7 @@ public enum MinaTcpClient {
 
     public void conn() {
         conn.setHandler(adapter);
+        conn.getFilterChain().addLast("message_f", new ProtocolCodecFilter(new MessageCoderFactory()));
         ConnectFuture connectFuture = conn.connect(new InetSocketAddress(HOST, PORT));
         connectFuture.awaitUninterruptibly();
         mSession = connectFuture.getSession();
@@ -52,17 +57,18 @@ public enum MinaTcpClient {
         conn.dispose(true);
     }
 
-    public void setHandler(BaseHandler baseHandler) {
-        adapter.setHandler(baseHandler);
-    }
 
     public void sendHeartBeat() {
+
         TimerTask timerTask = new TimerTask() {
             @Override
             public void run() {
-                System.out.println("-----------------------");
-                sendMessage(GpsSessionManager.SessionManager.getBeartHeatPkg());
+                System.out.println("-----------------------" + InfolistNo.get());
 
+                HeartBeatInfo info = new HeartBeatInfo();
+                //还要设置相关信息
+                //sendMessage(GpsSessionManager.SessionManager.getBeartHeatPkg(info));
+                InfolistNo.increase();
             }
         };
         Timer timer = new Timer();

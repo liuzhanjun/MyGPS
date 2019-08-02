@@ -26,7 +26,7 @@ public class TcpIoAdapter extends IoHandlerAdapter {
 
 //        DataDealUtils.dealPkg(bs);
         StringBuffer buffer = new StringBuffer();
-        if ((bs[0]^0x78)==1||(bs[1]^0x78)==1||(bs[ioBuffer.limit()-2]^0x0D)==1||(bs[ioBuffer.limit()-1]^0x0A)==1){
+        if ((bs[0]^0x78)!=0||(bs[1]^0x78)!=0||(bs[ioBuffer.limit()-2]^0x0D)!=0||(bs[ioBuffer.limit()-1]^0x0A)!=0){
             logger.info(String.format("%s|%s", BinaryUtils.byteToOx(BinaryUtils.getInt(bs[0])), BinaryUtils.byteToOx(BinaryUtils.getInt(bs[1]))));
             logger.info(String.format("%s|%s", BinaryUtils.byteToOx(BinaryUtils.getInt(bs[ioBuffer.limit() - 2])), BinaryUtils.byteToOx(BinaryUtils.getInt(bs[ioBuffer.limit() - 1]))));
             logger.info("=========================================");

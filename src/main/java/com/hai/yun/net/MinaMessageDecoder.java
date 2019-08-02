@@ -11,7 +11,7 @@ public class MinaMessageDecoder extends CumulativeProtocolDecoder {
     protected boolean doDecode(IoSession ioSession, IoBuffer ioBuffer, ProtocolDecoderOutput protocolDecoderOutput) throws Exception {
         byte[] bytes = new byte[ioBuffer.limit()];
         ioBuffer.get(bytes);
-        if ((bytes[ioBuffer.limit() - 1] ^ 0x0A) == 1 || (bytes[ioBuffer.limit() - 2] ^ 0x0D) == 1) {
+        if ((bytes[ioBuffer.limit() - 1] ^ 0x0A) != 0 || (bytes[ioBuffer.limit() - 2] ^ 0x0D) != 0) {
             ioBuffer.rewind();
             return false;
         }

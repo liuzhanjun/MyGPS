@@ -95,10 +95,9 @@ public class DataPkgInfo {
     }
 
     private void dealStopBit(byte[] content, int index) {
-
-
         int paklen = BinaryUtils.getInt(mPkgLength) + mPkgLength_L - mCheckBit_L;
 
+        System.out.println(paklen);
         //用来存放包长度到信息序列号的数组(校验的信息内容长度=包长度的内容所表示的长度+包长度的字节长度-检验位的长度)
         byte[] dealBytes = new byte[paklen];
         int dIndex = 0;
@@ -149,7 +148,7 @@ public class DataPkgInfo {
         //信息序列号长度为2
         private byte[] infolist;
 
-        private int mPkgLength_L;
+        private int mPkgLength_L = 1;
 
         public DataPkgInfo build() {
             DataPkgInfo dataPkgInfo = new DataPkgInfo();
@@ -162,7 +161,9 @@ public class DataPkgInfo {
                     + dataPkgInfo.mInfolist_L//信息序列号长度
                     + dataPkgInfo.mCheckBit_L;//校验位长度
 
+            System.out.println(len + "=====len======" + dataPkgInfo.mPkgLength_L);
             dataPkgInfo.mPkgLength = BinaryUtils.getBytes(len, dataPkgInfo.mPkgLength_L);
+
             return dataPkgInfo;
         }
 

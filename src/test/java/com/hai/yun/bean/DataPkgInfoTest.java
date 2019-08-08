@@ -26,6 +26,8 @@ public class DataPkgInfoTest {
                 //信息序列号
                 .setMInfolist(1)
                 .build();
+
+
         byte[] bs = datap.getDataPkg();
         for (byte b : bs) {
             System.out.print(BinaryUtils.byteToOx(BinaryUtils.getInt(b)) + "|");

@@ -13,15 +13,9 @@ public class BinaryUtilsTest {
     @Test
     public void getBytes() {
 
-        int a = Integer.parseInt("89", 16);
-        System.out.println(a);
-
-        byte[] bs = BinaryUtils.getBytes(a, 1);
-
-        System.out.println("0=" + bs[0]);
-
-        int s = BinaryUtils.getInt(bs);
-        System.out.println(s);
+        byte[] bytes = BinaryUtils.getBytes(13, 1);
+        int anInt = BinaryUtils.getInt(bytes);
+        System.out.println(anInt);
 
 
     }

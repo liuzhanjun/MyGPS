@@ -1,7 +1,12 @@
 package com.hai.yun.bean.utils;
 
+import org.apache.mina.core.buffer.IoBuffer;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 public class BinaryUtilsTest {
 
@@ -55,6 +60,33 @@ public class BinaryUtilsTest {
         String s = BinaryUtils.bytesToString(bytes);
         System.out.println(s);
         
+
+
+    }
+
+
+    @Test
+    public void testBufferIo(){
+        byte[] bytes = new byte[]{0x78, 0x78, 0x0B, 0x01, 0x00, 0x01,
+                0x12, 0x01, 0x08, 0x09, 0x1e, 0x0a,
+                BinaryUtils.getByte(0xd9),
+                BinaryUtils.getByte(0xdc), 0x0d, 0x0a};
+        IoBuffer buffer=IoBuffer.wrap(bytes);
+
+        ArrayList<Byte> listbyte=new ArrayList<>();
+       while (buffer.position()<buffer.capacity()){
+           listbyte.add(buffer.get());
+           System.out.println("postion:" + buffer.position() + "  limit:" + buffer.limit() + "  capacity:" + buffer.capacity());
+
+       }
+        buffer.flip();
+        System.out.println("postion:" + buffer.position() + "  limit:" + buffer.limit() + "  capacity:" + buffer.capacity());
+
+        for (Byte aByte : listbyte) {
+            System.out.print("|"+BinaryUtils.byteToOx(BinaryUtils.getInt(aByte)));
+        }
+
+
 
 
     }

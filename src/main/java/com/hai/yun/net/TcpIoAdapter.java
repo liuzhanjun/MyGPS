@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
 public class TcpIoAdapter extends IoHandlerAdapter {
     Logger logger = LoggerFactory.getLogger(TcpIoAdapter.class);
 
+    int count=1;
 
     @Override
     public void messageReceived(IoSession session, Object message) throws Exception {
@@ -26,8 +27,9 @@ public class TcpIoAdapter extends IoHandlerAdapter {
         for (byte b : bs) {
             buffer.append("|"+BinaryUtils.byteToOx(BinaryUtils.getInt(b)));
         }
-        logger.info(buffer.toString());
-
+        System.out.println((count+"==="+buffer.toString()));
+        ;
+        count++;
 //        DataDealUtils.dealPkg(bs);
 //        StringBuffer buffer = new StringBuffer();
 //        if ((bs[0]^0x78)!=0||(bs[1]^0x78)!=0||(bs[ioBuffer.limit()-2]^0x0D)!=0||(bs[ioBuffer.limit()-1]^0x0A)!=0){

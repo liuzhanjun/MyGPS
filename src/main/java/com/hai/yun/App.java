@@ -16,9 +16,6 @@ public class App {
         MinaTcpClient.client.init();
 
         MinaTcpClient.client.sendMessage(GpsSessionManager.SessionManager.getIMSI("460595485214565"));
-        MinaTcpClient.client.sendMessage(GpsSessionManager.SessionManager.getIMSI("460595485214565"));
-        MinaTcpClient.client.sendMessage(GpsSessionManager.SessionManager.getIMSI("460595485214565"));
-        MinaTcpClient.client.sendMessage(GpsSessionManager.SessionManager.getIMSI("460595485214565"));
 
 
     }

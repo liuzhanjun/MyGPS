@@ -25,8 +25,6 @@ public class MinaMessageDecoder extends CumulativeProtocolDecoder {
 
     @Override
     protected boolean doDecode(IoSession ioSession, IoBuffer ioBuffer, ProtocolDecoderOutput protocolDecoderOutput) throws Exception {
-        //每次读取两个字节，直到读取到0D0A
-
         //粘包问题
 //        ioBuffer.l
         ArrayList<Byte> listbyte = new ArrayList<>();
@@ -50,7 +48,7 @@ public class MinaMessageDecoder extends CumulativeProtocolDecoder {
                 listbyte.add(temp);
             }
 
-            System.out.println("postion：" + ioBuffer.position() + "   limit:" + ioBuffer.limit() + "  capacity:" + ioBuffer.capacity());
+//            System.out.println("postion：" + ioBuffer.position() + "   limit:" + ioBuffer.limit() + "  capacity:" + ioBuffer.capacity());
 
         }
         //分包问题
@@ -61,9 +59,9 @@ public class MinaMessageDecoder extends CumulativeProtocolDecoder {
             ioBuffer.rewind();
             return false;
         }
-        IoBuffer buffer = IoBuffer.wrap(bytes);
-        protocolDecoderOutput.write(buffer);
-        return true;
+//        IoBuffer buffer = IoBuffer.wrap(bytes);
+//        protocolDecoderOutput.write(buffer);
+        return false;
 
     }
 }

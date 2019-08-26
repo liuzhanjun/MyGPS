@@ -17,8 +17,8 @@ public class DateUtils {
         bytes[1] = BinaryUtils.getByte(time.monthOfYear().get());
         bytes[2] = BinaryUtils.getByte(time.dayOfMonth().get());
         bytes[3] = BinaryUtils.getByte(time.hourOfDay().get());
-        bytes[4] = BinaryUtils.getByte(time.getMinuteOfHour());
-        bytes[5] = BinaryUtils.getByte(time.getSecondOfMinute());
+        bytes[4] = BinaryUtils.getByte(time.minuteOfHour().get());
+        bytes[5] = BinaryUtils.getByte(time.secondOfMinute().get());
         return bytes;
 
     }

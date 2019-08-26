@@ -64,6 +64,13 @@ public class BinaryUtilsTest {
 
     }
 
+    @Test
+    public void oxto(){
+        byte[] bytes = BinaryUtils.getoxBinary("123456789012345af");
+        for (byte aByte : bytes) {
+            System.out.println(BinaryUtils.byteToOx(BinaryUtils.getInt(aByte)));
+        }
+    }
 
     @Test
     public void testBufferIo(){

@@ -48,13 +48,9 @@ public class CRC16 {
 
 //        byte[] fcs = getBytes(65535, 2);
         int fcs = 0xffff;
-        int len = bytes.length;
-
         for (int i = 0; i < bytes.length; i++) {
             fcs = (fcs >> 8) ^ crctab[(fcs ^ bytes[i]) & 0xff];
         }
-
-
         return BinaryUtils.getBytes(~fcs, 2);
 
     }

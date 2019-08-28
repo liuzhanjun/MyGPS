@@ -23,7 +23,7 @@ public class HeartBeatInfo {
     //设备休眠状态
     //0x00=正常
     //0x01=休眠
-    private TerminaExt mExt; //920B 才选择这个属性
+    private TerminaExt mExt; //语言或者工作模式920B才选择这个属性
 
 
     public HeartBeatInfo addListNO(int listNO) {

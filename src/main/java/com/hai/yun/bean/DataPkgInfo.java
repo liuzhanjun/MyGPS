@@ -85,7 +85,7 @@ public class DataPkgInfo {
         byte[] content = new byte[all_pkg_len];
         //添加起始位
         int index = 0;
-        index = addInfo(content, index, mSTARTBIT);
+        index = addInfo(content, index, this.mSTARTBIT);
 
         //获得包长度到信息序列号之间的数据，用作后面校验位的处理
         dealStopBit(content, index);
@@ -152,6 +152,7 @@ public class DataPkgInfo {
 
         public DataPkgInfo build() {
             DataPkgInfo dataPkgInfo = new DataPkgInfo();
+            dataPkgInfo.mSTARTBIT=this.mSTARTBIT;
             dataPkgInfo.mPkgLength_L = mPkgLength_L;
             dataPkgInfo.mAgreeMentNO = this.agreeMentNO;
             dataPkgInfo.mContent = this.content;
